@@ -1,0 +1,16 @@
+### TODOS ###
+# models
+user
+role
+address? (one to many)
+token (with scopes, authentication, activation, there should be a limit)
+products
+order
+order item
+
+
+# authentication/authorization (keep it simple with roles only...)
+
+# email package & activation
+
+# caching?

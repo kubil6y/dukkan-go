@@ -19,3 +19,5 @@ func (v *Validator) Check(condition bool, key, message string) {
 func (v *Validator) Valid() bool {
 	return len(v.Errors) == 0
 }
+
+// NOTE helper functions: https://github.com/asaskevich/govalidator
