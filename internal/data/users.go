@@ -67,7 +67,7 @@ func (m UserModel) Insert(u *User) error {
 
 func (m UserModel) GetByID(id int64) (*User, error) {
 	var user User
-	err := m.DB.Where("id=?", id).First(&user).Error
+	err := m.DB.Preload("Role").Where("id=?", id).First(&user).Error
 	if err != nil {
 		switch {
 		case errors.Is(err, gorm.ErrRecordNotFound):

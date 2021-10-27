@@ -50,3 +50,41 @@ func (d *createAuthenticationTokenDTO) validate(v *validator.Validator) {
 	v.Check(d.Password != "", "password", "must be provided")
 	v.Check(govalidator.IsEmail(d.Email), "email", "must be a valid email")
 }
+
+type createRoleDTO struct {
+	Name string `json:"name"`
+}
+
+func (d *createRoleDTO) validate(v *validator.Validator) {
+	v.Check(d.Name != "", "name", "must be provided")
+	v.Check(len(d.Name) > 2, "name", "must be longer than two characters")
+}
+
+func (d *createRoleDTO) populate(role *data.Role) {
+	role.Name = d.Name
+}
+
+// seems like duplication but in the future,
+// role fields might change, and there might be
+// fields that we dont allow them to change.
+type updateRoleDTO struct {
+	Name string `json:"name"`
+}
+
+func (d *updateRoleDTO) validate(v *validator.Validator) {
+	v.Check(d.Name != "", "name", "must be provided")
+	v.Check(len(d.Name) > 2, "name", "must be longer than two characters")
+}
+
+func (d *updateRoleDTO) populate(role *data.Role) {
+	role.Name = d.Name
+}
+
+type updateUserRoleDTO struct {
+	RoleID int64 `json:"role_id"`
+}
+
+func (d *updateUserRoleDTO) validate(v *validator.Validator) {
+	v.Check(d.RoleID != 0, "role_id", "must be provided")
+	v.Check(d.RoleID > 0, "role_id", "invalid role id value")
+}
