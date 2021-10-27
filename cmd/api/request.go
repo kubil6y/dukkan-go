@@ -88,3 +88,8 @@ func (d *updateUserRoleDTO) validate(v *validator.Validator) {
 	v.Check(d.RoleID != 0, "role_id", "must be provided")
 	v.Check(d.RoleID > 0, "role_id", "invalid role id value")
 }
+
+func validateTokenPlaintext(v *validator.Validator, tokenPlaintext string) {
+	v.Check(tokenPlaintext != "", "token", "must be provided")
+	v.Check(len(tokenPlaintext) == 26, "token", "must be 26 bytes long")
+}
