@@ -3,8 +3,10 @@ package main
 import (
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/kubil6y/dukkan-go/internal/data"
+	"github.com/kubil6y/dukkan-go/internal/email"
 	"github.com/kubil6y/dukkan-go/internal/validator"
 )
 
@@ -28,7 +30,9 @@ func (app *application) registerHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// NOTE RoleID=2, default user
+	// NOTE RoleID=3, default user
+	// TODO
+	user.RoleID = 3
 
 	if err := app.models.Users.Insert(&user); err != nil {
 		switch {
@@ -41,7 +45,21 @@ func (app *application) registerHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	out := app.outOK(input)
+	// create token
+	token, err := app.models.Tokens.New(user.ID, 1*time.Hour, data.ScopeActivation)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	// send email on the background
+
+	app.background(func() {
+		email.ActivationEmail(&user, token.Plaintext)
+	})
+
+	e := envelope{"user": user}
+	out := app.outOK(e)
 	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
 		app.serverErrorResponse(w, r, err)
 		return

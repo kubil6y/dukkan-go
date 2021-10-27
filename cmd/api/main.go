@@ -1,6 +1,7 @@
 package main
 
 import (
+	"sync"
 	"time"
 
 	"github.com/kubil6y/dukkan-go/internal/data"
@@ -23,6 +24,7 @@ type application struct {
 	logger  *zap.SugaredLogger
 	models  data.Models
 	version string
+	wg      sync.WaitGroup
 }
 
 func main() {

@@ -3,6 +3,7 @@ package data
 import (
 	"crypto/sha256"
 	"errors"
+	"strings"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -27,6 +28,10 @@ type User struct {
 
 func (u *User) IsAnon() bool {
 	return u == AnonUser
+}
+
+func (u *User) FullName() string {
+	return strings.Title(u.FirstName + " " + u.LastName)
 }
 
 func (u *User) SetPassword(plain string) error {

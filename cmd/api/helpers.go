@@ -102,3 +102,19 @@ func (app *application) parseIDParam(r *http.Request) (int64, error) {
 	}
 	return id, nil
 }
+
+func (app *application) background(fn func()) {
+	app.wg.Add(1)
+	go func() {
+		defer app.wg.Done()
+
+		// recover...
+		defer func() {
+			if err := recover(); err != nil {
+				app.logger.Errorf("%s", err)
+			}
+		}()
+
+		fn()
+	}()
+}
