@@ -22,7 +22,7 @@ func (d *registerDTO) validate(v *validator.Validator) {
 	v.Check(d.PasswordConfirm != "", "password_confirm", "must be provided")
 	v.Check(d.Password == d.PasswordConfirm, "password", "passwords do not match")
 
-	v.Check(govalidator.IsEmail(d.Email), "email", "must be a valid email")
+	v.Check(govalidator.IsEmail(d.Email), "email", "must be a valid email address")
 	v.Check(len(d.FirstName) >= 2, "first_name", "must be at least two characters")
 	v.Check(len(d.LastName) >= 2, "last_name", "must be at least two characters")
 	v.Check(len(d.Password) >= 6, "password", "must be at least six characters")
@@ -48,7 +48,7 @@ type createAuthenticationTokenDTO struct {
 func (d *createAuthenticationTokenDTO) validate(v *validator.Validator) {
 	v.Check(d.Email != "", "email", "must be provided")
 	v.Check(d.Password != "", "password", "must be provided")
-	v.Check(govalidator.IsEmail(d.Email), "email", "must be a valid email")
+	v.Check(govalidator.IsEmail(d.Email), "email", "must be a valid email address")
 }
 
 type createRoleDTO struct {
@@ -92,4 +92,22 @@ func (d *updateUserRoleDTO) validate(v *validator.Validator) {
 func validateTokenPlaintext(v *validator.Validator, tokenPlaintext string) {
 	v.Check(tokenPlaintext != "", "token", "must be provided")
 	v.Check(len(tokenPlaintext) == 26, "token", "must be 26 bytes long")
+}
+
+type activateAccountDTO struct {
+	Code string `json:"code"`
+}
+
+func (d *activateAccountDTO) validate(v *validator.Validator) {
+	v.Check(d.Code != "", "code", "must be provided")
+	v.Check(len(d.Code) == 26, "code", "must be 26 bytes long")
+}
+
+type generateActivationTokenDTO struct {
+	Email string `json:"email"`
+}
+
+func (d *generateActivationTokenDTO) validate(v *validator.Validator) {
+	v.Check(d.Email != "", "email", "must be provided")
+	v.Check(govalidator.IsEmail(d.Email), "email", "must be a valid email address")
 }

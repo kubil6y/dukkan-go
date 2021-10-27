@@ -21,9 +21,9 @@ type User struct {
 	IsActivated bool      `json:"is_activated" gorm:"default:false;not null"`
 	IsAdmin     bool      `json:"is_admin" gorm:"default:false;not null"`
 	RoleID      int64     `json:"role_id" gorm:"not null"`
-	Role        Role      `json:"role" gorm:"not null"`
+	Role        Role      `json:"role,omitempty" gorm:"not null"`
 	Tokens      []Token   `json:"tokens,omitempty" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
-	Addresses   []Address `json:"addresses" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
+	Addresses   []Address `json:"addresses,omitempty" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
 }
 
 func (u *User) IsAnon() bool {

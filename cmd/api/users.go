@@ -2,11 +2,11 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/kubil6y/dukkan-go/internal/data"
-	"github.com/kubil6y/dukkan-go/internal/email"
 	"github.com/kubil6y/dukkan-go/internal/validator"
 )
 
@@ -54,13 +54,15 @@ func (app *application) registerHandler(w http.ResponseWriter, r *http.Request) 
 
 	// send email on the background
 
-	app.background(func() {
-		email.ActivationEmail(&user, token.Plaintext)
-	})
+	// TODO
+	//app.background(func() {
+	//email.ActivationEmail(&user, token.Plaintext)
+	//})
+	fmt.Println(token) // TODO
 
-	e := envelope{"user": user}
+	e := envelope{"message": "success"}
 	out := app.outOK(e)
-	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
+	if err := app.writeJSON(w, http.StatusCreated, out, nil); err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}

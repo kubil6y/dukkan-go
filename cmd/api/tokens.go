@@ -61,3 +61,88 @@ func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, 
 		return
 	}
 }
+
+func (app *application) activateAccountHandler(w http.ResponseWriter, r *http.Request) {
+	var input activateAccountDTO
+
+	if err := app.readJSON(w, r, &input); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	v := validator.New()
+	if input.validate(v); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	user, err := app.models.Users.GetForToken(data.ScopeActivation, input.Code)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	user.IsActivated = true
+
+	if err := app.models.Tokens.ActivateUserAndDeleteToken(input.Code, user); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	e := envelope{"message": "success"}
+	out := app.outOK(e)
+	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+}
+
+func (app *application) generateActivationTokenHandler(w http.ResponseWriter, r *http.Request) {
+	var input generateActivationTokenDTO
+	if err := app.readJSON(w, r, &input); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	v := validator.New()
+	if input.validate(v); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	user, err := app.models.Users.GetByEmail(input.Email)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	token, err := app.models.Tokens.New(user.ID, 1*time.Hour, data.ScopeActivation)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	// TODO
+	//app.background(func() {
+	//email.ActivationEmail(user, token.Plaintext)
+	//})
+
+	e := envelope{
+		"code": token.Plaintext,
+	}
+	out := app.outOK(e)
+	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+}

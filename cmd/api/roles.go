@@ -36,7 +36,7 @@ func (app *application) createRoleHandler(w http.ResponseWriter, r *http.Request
 
 	e := envelope{"message": "success"}
 	out := app.outOK(e)
-	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
+	if err := app.writeJSON(w, http.StatusCreated, out, nil); err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}

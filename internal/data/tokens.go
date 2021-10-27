@@ -63,3 +63,19 @@ func (m TokenModel) New(userID int64, ttl time.Duration, scope string) (*Token, 
 	err = m.Insert(token)
 	return token, err
 }
+
+func (m TokenModel) ActivateUserAndDeleteToken(tokenPlaintext string, user *User) error {
+	tx := m.DB.Begin()
+	if err := tx.Model(user).Updates(user).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := m.DB.Where("user_id", user.ID).Delete(Token{}).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
+	return nil
+}

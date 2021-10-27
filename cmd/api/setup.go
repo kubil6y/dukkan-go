@@ -19,6 +19,7 @@ func setupFlags(cfg *config) {
 
 	flag.StringVar(&cfg.port, "port", os.Getenv("PORT"), "API Server PORT")
 	flag.StringVar(&cfg.env, "env", os.Getenv("ENV"), "Server Environment {development|production}")
+	flag.StringVar(&cfg.domain, "domain", os.Getenv("DOMAIN"), "Application domain")
 	flag.StringVar(&cfg.db.dsn, "db-dsn", os.Getenv("DUKKAN_DB_DSN"), "Database DSN")
 	flag.Parse()
 }

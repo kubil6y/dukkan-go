@@ -12,9 +12,10 @@ import (
 const version = "1.0.0"
 
 type config struct {
-	port string
-	env  string
-	db   struct {
+	port   string
+	env    string
+	domain string
+	db     struct {
 		dsn string
 	}
 }
