@@ -17,9 +17,11 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodPost, "/v1/tokens/activation", app.activateAccountHandler)
 	router.HandlerFunc(http.MethodPost, "/v1/tokens/generate-activation", app.generateActivationTokenHandler)
 
-	router.HandlerFunc(http.MethodGet, "/v1/users", app.getAllUsersHandler)
-	router.HandlerFunc(http.MethodGet, "/v1/users/:id", app.getUserHandler)
-	router.HandlerFunc(http.MethodPatch, "/v1/users/:id", app.updateUserHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/users", app.getAllUsersHandler)      // admin
+	router.HandlerFunc(http.MethodGet, "/v1/users/:id", app.getUserHandler)      // admin
+	router.HandlerFunc(http.MethodPatch, "/v1/users/:id", app.updateUserHandler) // admin
+
+	router.HandlerFunc(http.MethodGet, "/v1/profile", app.requireAuthentication(app.getProfileHandler)) // authenticated
 
 	// TODO
 	router.HandlerFunc(http.MethodPost, "/v1/addresses", app.createAddressHandler)
@@ -35,5 +37,5 @@ func (app *application) routes() http.Handler {
 
 	router.HandlerFunc(http.MethodPost, "/v1/admin/users/:id/role", app.updateUserRoleHandler)
 
-	return router
+	return app.authenticate(router)
 }

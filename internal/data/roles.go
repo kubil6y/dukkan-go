@@ -27,12 +27,18 @@ func (m RoleModel) Insert(r *Role) error {
 	return nil
 }
 
-func (m RoleModel) GetAll() ([]*Role, error) {
-	var roles []*Role
-	if err := m.DB.Find(&roles).Error; err != nil {
-		return nil, err
+func (m RoleModel) GetAll(p *Paginate) ([]Role, Metadata, error) {
+	var roles []Role
+
+	err := m.DB.Scopes(p.PaginatedResults).Find(&roles).Error
+	if err != nil {
+		return nil, Metadata{}, nil
 	}
-	return roles, nil
+
+	var total int64
+	m.DB.Model(&Role{}).Count(&total)
+	metadata := CalculateMetadata(p, int(total))
+	return roles, metadata, nil
 }
 
 func (m RoleModel) GetByID(id int64) (*Role, error) {

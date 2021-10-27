@@ -43,18 +43,30 @@ func (app *application) createRoleHandler(w http.ResponseWriter, r *http.Request
 }
 
 func (app *application) getAllRolesHandler(w http.ResponseWriter, r *http.Request) {
-	roles, err := app.models.Roles.GetAll()
+	v := validator.New()
+	p := data.NewPaginate(r, v, 10, 1)
+
+	if data.ValidatePaginate(p, v); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	roles, metadata, err := app.models.Roles.GetAll(p)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
 
-	e := envelope{"roles": roles}
+	e := envelope{
+		"roles":    roles,
+		"metadata": metadata,
+	}
 	out := app.outOK(e)
 	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
+
 }
 
 func (app *application) getRoleHandler(w http.ResponseWriter, r *http.Request) {

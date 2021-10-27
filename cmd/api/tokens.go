@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/kubil6y/dukkan-go/internal/data"
+	"github.com/kubil6y/dukkan-go/internal/email"
 	"github.com/kubil6y/dukkan-go/internal/validator"
 )
 
@@ -132,10 +133,9 @@ func (app *application) generateActivationTokenHandler(w http.ResponseWriter, r 
 		return
 	}
 
-	// TODO
-	//app.background(func() {
-	//email.ActivationEmail(user, token.Plaintext)
-	//})
+	app.background(func() {
+		email.ActivationEmail(user, token.Plaintext)
+	})
 
 	e := envelope{
 		"code": token.Plaintext,

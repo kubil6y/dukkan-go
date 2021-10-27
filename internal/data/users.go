@@ -74,7 +74,7 @@ func (m UserModel) Insert(u *User) error {
 func (m UserModel) GetAll(p *Paginate) ([]User, Metadata, error) {
 	var users []User
 
-	err := m.DB.Scopes(p.PaginatedResults).Find(&users).Error
+	err := m.DB.Scopes(p.PaginatedResults).Preload("Role").Find(&users).Error
 	if err != nil {
 		return nil, Metadata{}, nil
 	}

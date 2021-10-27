@@ -11,8 +11,9 @@ import (
 func (app *application) authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
+
 		if authHeader == "" {
-			app.setUserContext(r, data.AnonUser)
+			r = app.setUserContext(r, data.AnonUser)
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -37,7 +38,7 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 			return
 		}
 
-		app.setUserContext(r, user)
+		r = app.setUserContext(r, user)
 
 		next.ServeHTTP(w, r)
 	})
