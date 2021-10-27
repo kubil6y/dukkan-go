@@ -23,7 +23,6 @@ do not allow to write a review before purchasing and rating it...
 
 
 # TODO
-# user crud
 # products crud
 # add missing middlewares
 # stop doing cruds for all that shit? just get it working...

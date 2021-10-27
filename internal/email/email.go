@@ -15,13 +15,13 @@ func ActivationEmail(user *data.User, code string) {
 		plainTextContent := fmt.Sprintf("Activation Code: %s", code)
 
 		htmlContent := fmt.Sprintf(`
-			<div>
-				<h4>Dukkan!</h4>
-				<p><strong>Activation Code: HASLDFJHALSFHJOIWUEH</strong></p>
-				<small>
-					Please visit <a href="%s/tokens/activation">activation page.</a>
-				</small>
-			</div>`, os.Getenv("DOMAIN"))
+				<div>
+					<h4>Dukkan!</h4>
+					<p><strong>Activation Code: %s</strong></p>
+					<small>
+						Please visit <a href="%s/tokens/activation">activation page.</a>
+					</small>
+				</div>`, code, os.Getenv("DOMAIN"))
 
 		message := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
 		client := sendgrid.NewSendClient(os.Getenv("SENDGRID_API_KEY"))
