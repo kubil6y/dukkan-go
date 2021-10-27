@@ -2,8 +2,6 @@
 # models
 user
 role
-address? (one to many)
-token (with scopes, authentication, activation, there should be a limit)
 products
 reviews
 ratings
@@ -14,6 +12,22 @@ order item
 do not allow to write a review before purchasing and rating it...
 
 
-# PAGINATION  IMPORTANT
 # look how to handle currency
 # caching?
+
+
+
+
+
+
+
+
+# TODO
+# user crud
+# products crud
+# add missing middlewares
+# stop doing cruds for all that shit? just get it working...
+# token cleanup
+# graceful shutdown, panic recovery, rate limiting.
+
+# critical issue race condition for products quantity (use tx?)

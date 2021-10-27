@@ -14,16 +14,16 @@ var AnonUser = &User{}
 
 type User struct {
 	CoreModel
-	FirstName   string    `json:"first_name" gorm:"not null"`
-	LastName    string    `json:"last_name" gorm:"not null"`
-	Email       string    `json:"email" gorm:"uniqueIndex;not null"`
-	Password    []byte    `json:"-" gorm:"not null"`
-	IsActivated bool      `json:"is_activated" gorm:"default:false;not null"`
-	IsAdmin     bool      `json:"is_admin" gorm:"default:false;not null"`
-	RoleID      int64     `json:"role_id" gorm:"not null"`
-	Role        Role      `json:"role,omitempty" gorm:"not null"`
-	Tokens      []Token   `json:"tokens,omitempty" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
-	Addresses   []Address `json:"addresses,omitempty" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
+	FirstName   string  `json:"first_name" gorm:"not null"`
+	LastName    string  `json:"last_name" gorm:"not null"`
+	Email       string  `json:"email" gorm:"uniqueIndex;not null"`
+	Password    []byte  `json:"-" gorm:"not null"`
+	Address     string  `json:"address"` // TODO gorm not null
+	IsActivated bool    `json:"is_activated" gorm:"default:false;not null"`
+	IsAdmin     bool    `json:"is_admin" gorm:"default:false;not null"`
+	RoleID      int64   `json:"-" gorm:"not null"`
+	Role        Role    `json:"-" gorm:"not null"`
+	Tokens      []Token `json:"tokens,omitempty" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
 }
 
 func (u *User) IsAnon() bool {
@@ -140,7 +140,6 @@ func (m UserModel) GetForToken(scope string, tokenPlaintext string) (*User, erro
 	err = m.DB.
 		Where("id=?", token.UserID).
 		Preload("Role").
-		Preload("Addresses").
 		First(&user).Error
 
 	return &user, nil

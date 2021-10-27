@@ -114,10 +114,37 @@ func (app *application) getUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (app *application) updateUserHandler(w http.ResponseWriter, r *http.Request) {}
-
 func (app *application) getProfileHandler(w http.ResponseWriter, r *http.Request) {
 	user := app.getUserContext(r)
+	e := envelope{"user": user}
+	out := app.outOK(e)
+	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+}
+
+func (app *application) editProfileHandler(w http.ResponseWriter, r *http.Request) {
+	var input editProfileDTO
+	if err := app.readJSON(w, r, &input); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	v := validator.New()
+	if input.validate(v); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	user := app.getUserContext(r)
+	input.populate(user)
+
+	if err := app.models.Users.Update(user); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
 	e := envelope{"user": user}
 	out := app.outOK(e)
 	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {

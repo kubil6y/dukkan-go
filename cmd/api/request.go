@@ -111,3 +111,73 @@ func (d *generateActivationTokenDTO) validate(v *validator.Validator) {
 	v.Check(d.Email != "", "email", "must be provided")
 	v.Check(govalidator.IsEmail(d.Email), "email", "must be a valid email address")
 }
+
+type editProfileDTO struct {
+	FirstName       *string `json:"first_name"`
+	LastName        *string `json:"last_name"`
+	Email           *string `json:"email"`
+	Password        *string `json:"password"`
+	PasswordConfirm *string `json:"password_confirm"`
+	Address         *string `json:"address"`
+}
+
+func (d *editProfileDTO) validate(v *validator.Validator) {
+	if d.FirstName != nil {
+		v.Check(*d.FirstName != "", "first_name", "must be provided")
+		v.Check(len(*d.FirstName) > 2, "first_name", "must be longer then two characters")
+	}
+
+	if d.LastName != nil {
+		v.Check(*d.LastName != "", "last_name", "must be provided")
+		v.Check(len(*d.LastName) > 2, "last_name", "must be longer then two characters")
+	}
+
+	if d.Email != nil {
+		v.Check(*d.FirstName != "", "email", "must be provided")
+		v.Check(govalidator.IsEmail(*d.Email), "email", "must be a valid email address")
+	}
+
+	if d.PasswordConfirm != nil {
+		if d.Password == nil {
+			v.Check(false, "password", "must be provided")
+			return
+		}
+	}
+
+	if d.Password != nil {
+		if d.PasswordConfirm == nil {
+			v.Check(false, "password_confirm", "must be provided")
+			return
+		}
+		v.Check(*d.Password != "", "password", "must be provided")
+		v.Check(*d.PasswordConfirm != "", "password_confirm", "must be provided")
+		v.Check(len(*d.Password) >= 6, "password", "must be at least six characters")
+		v.Check(*d.Password == *d.PasswordConfirm, "password", "passwords do not match")
+	}
+
+	if d.Address != nil {
+		v.Check(*d.Address != "", "address", "must be provided")
+		v.Check(len(*d.Address) > 12, "address", "must be longer than 12 characters")
+	}
+}
+
+func (d *editProfileDTO) populate(user *data.User) {
+	if d.FirstName != nil {
+		user.FirstName = *d.FirstName
+	}
+
+	if d.LastName != nil {
+		user.LastName = *d.LastName
+	}
+	if d.Email != nil {
+		user.Email = *d.Email
+	}
+
+	if d.Password != nil {
+		user.SetPassword(*d.Password)
+	}
+
+	if d.Address != nil {
+		user.Address = *d.Address
+	}
+}

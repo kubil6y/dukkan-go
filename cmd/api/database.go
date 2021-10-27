@@ -19,6 +19,5 @@ func autoMigrate(db *gorm.DB) {
 		&data.User{},
 		&data.Role{},
 		&data.Token{},
-		&data.Address{},
 	)
 }
