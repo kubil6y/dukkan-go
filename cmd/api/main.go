@@ -11,7 +11,7 @@ import (
 const version = "1.0.0"
 
 type config struct {
-	port int
+	port string
 	env  string
 	db   struct {
 		dsn string
@@ -29,15 +29,22 @@ func main() {
 	var cfg config
 	setupFlags(&cfg)
 
-	config := zap.NewProductionConfig()
-	config.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout(time.Stamp)
-	logger, _ := config.Build()
+	loggerConfig := zap.NewProductionConfig()
+	loggerConfig.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout(time.Stamp)
+	logger, _ := loggerConfig.Build()
 	sugar := logger.Sugar()
+
+	db, err := connectDatabase(cfg)
+	if err != nil {
+		sugar.Fatal(err)
+	}
+	autoMigrate(db)
 
 	app := &application{
 		config:  cfg,
 		logger:  sugar,
 		version: version,
+		models:  data.NewModels(db),
 	}
 
 	if err := app.serve(); err != nil {

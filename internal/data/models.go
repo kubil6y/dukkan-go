@@ -3,6 +3,8 @@ package data
 import (
 	"errors"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 var (
@@ -17,5 +19,13 @@ type CoreModel struct {
 }
 
 type Models struct {
-	Users UserModel
+	Users  UserModel
+	Tokens TokenModel
+}
+
+func NewModels(db *gorm.DB) Models {
+	return Models{
+		Users:  UserModel{DB: db},
+		Tokens: TokenModel{DB: db},
+	}
 }
