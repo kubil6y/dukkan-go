@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/kubil6y/dukkan-go/internal/validator"
 )
 
 type envelope map[string]interface{}
@@ -118,3 +120,44 @@ func (app *application) background(fn func()) {
 		fn()
 	}()
 }
+
+// QUERY STRING METHODS BEGIN //////////////////////////////
+func (app *application) readString(qs url.Values, key string, defaultValue string) string {
+	s := qs.Get(key)
+	if s == "" {
+		return defaultValue
+	}
+	return s
+}
+
+func (app *application) readInt(qs url.Values, v *validator.Validator, key string, defaultValue int) int {
+	s := qs.Get(key)
+	if s == "" {
+		return defaultValue
+	}
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		v.AddError(key, "invalid value")
+		return defaultValue
+	}
+	return i
+}
+
+func (app *application) readCSV(qs url.Values, key string, defaultValue []string) []string {
+	csv := qs.Get(key)
+	if csv == "" {
+		return defaultValue
+	}
+	return strings.Split(csv, ",")
+}
+
+func ContainsIS(nums []int64, target int64) bool {
+	for _, v := range nums {
+		if v == target {
+			return true
+		}
+	}
+	return false
+}
+
+// QUERY STRING METHODS END //////////////////////////////

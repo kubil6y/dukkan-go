@@ -67,3 +67,33 @@ func (app *application) registerHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 }
+
+func (app *application) getAllUsersHandler(w http.ResponseWriter, r *http.Request) {
+	v := validator.New()
+	p := data.NewPaginate(r, v, 2, 1)
+
+	if data.ValidatePaginate(p, v); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	users, metadata, err := app.models.Users.GetAll(p)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	e := envelope{
+		"users":    users,
+		"metadata": metadata,
+	}
+	out := app.outOK(e)
+	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+}
+
+func (app *application) getUserHandler(w http.ResponseWriter, r *http.Request) {}
+
+func (app *application) updateUserHandler(w http.ResponseWriter, r *http.Request) {}

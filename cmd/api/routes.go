@@ -17,6 +17,10 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodPost, "/v1/tokens/activation", app.activateAccountHandler)
 	router.HandlerFunc(http.MethodPost, "/v1/tokens/generate-activation", app.generateActivationTokenHandler)
 
+	router.HandlerFunc(http.MethodGet, "/v1/users", app.getAllUsersHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/users/:id", app.getUserHandler)
+	router.HandlerFunc(http.MethodPatch, "/v1/users/:id", app.updateUserHandler)
+
 	// TODO
 	router.HandlerFunc(http.MethodPost, "/v1/addresses", app.createAddressHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/addresses/:id", app.getAddressHandler)

@@ -10,19 +10,10 @@ ratings
 order
 order item
 
-
-# authentication/authorization (keep it simple with roles only...)
-
-# email package & activation
-
-# look how to handle currency
-
-# caching?
-
-# pagination  important
-
-### some rules ###
+### SOME RULES ###
 do not allow to write a review before purchasing and rating it...
 
-### next ###
-middlewares!!!!!
+
+# PAGINATION  IMPORTANT
+# look how to handle currency
+# caching?

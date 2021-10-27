@@ -71,6 +71,20 @@ func (m UserModel) Insert(u *User) error {
 	return nil
 }
 
+func (m UserModel) GetAll(p *Paginate) ([]User, Metadata, error) {
+	var users []User
+
+	err := m.DB.Scopes(p.PaginatedResults).Find(&users).Error
+	if err != nil {
+		return nil, Metadata{}, nil
+	}
+
+	var total int64
+	m.DB.Model(&User{}).Count(&total)
+	metadata := CalculateMetadata(p, int(total))
+	return users, metadata, nil
+}
+
 func (m UserModel) GetByID(id int64) (*User, error) {
 	var user User
 	err := m.DB.Preload("Role").Where("id=?", id).First(&user).Error
