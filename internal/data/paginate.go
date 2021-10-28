@@ -17,8 +17,8 @@ type Paginate struct {
 func ValidatePaginate(p *Paginate, v *validator.Validator) {
 	v.Check(p.Page > 0, "page", "must be greater than zero")
 	v.Check(p.Limit > 0, "limit", "must be greater than zero")
-	v.Check(p.Page <= 10_000, "page", "must be a maximum of 10_000")
-	v.Check(p.Limit <= 100, "limit", "must be a maximum of 100")
+	v.Check(p.Page <= 100, "page", "must be a maximum of 100")
+	v.Check(p.Limit <= 25, "limit", "must be a maximum of 25")
 }
 
 func NewPaginate(r *http.Request, v *validator.Validator, limitDefault, pageDefault int) *Paginate {

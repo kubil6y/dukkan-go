@@ -14,20 +14,22 @@ var (
 
 type CoreModel struct {
 	ID        int64     `json:"id" gorm:"primarykey"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"created_at" gorm:"not null"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"not null"`
 }
 
 type Models struct {
-	Users  UserModel
-	Tokens TokenModel
-	Roles  RoleModel
+	Users    UserModel
+	Tokens   TokenModel
+	Roles    RoleModel
+	Products ProductModel
 }
 
 func NewModels(db *gorm.DB) Models {
 	return Models{
-		Users:  UserModel{DB: db},
-		Tokens: TokenModel{DB: db},
-		Roles:  RoleModel{DB: db},
+		Users:    UserModel{DB: db},
+		Tokens:   TokenModel{DB: db},
+		Roles:    RoleModel{DB: db},
+		Products: ProductModel{DB: db},
 	}
 }

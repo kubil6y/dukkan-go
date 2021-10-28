@@ -10,6 +10,7 @@ type registerDTO struct {
 	FirstName       string `json:"first_name"`
 	LastName        string `json:"last_name"`
 	Email           string `json:"email"`
+	Address         string `json:"address"`
 	Password        string `json:"password"`
 	PasswordConfirm string `json:"password_confirm"`
 }
@@ -18,6 +19,7 @@ func (d *registerDTO) validate(v *validator.Validator) {
 	v.Check(d.FirstName != "", "first_name", "must be provided")
 	v.Check(d.LastName != "", "last_name", "must be provided")
 	v.Check(d.Email != "", "email", "must be provided")
+	v.Check(d.Address != "", "email", "must be provided")
 	v.Check(d.Password != "", "password", "must be provided")
 	v.Check(d.PasswordConfirm != "", "password_confirm", "must be provided")
 	v.Check(d.Password == d.PasswordConfirm, "password", "passwords do not match")
@@ -26,15 +28,13 @@ func (d *registerDTO) validate(v *validator.Validator) {
 	v.Check(len(d.FirstName) >= 2, "first_name", "must be at least two characters")
 	v.Check(len(d.LastName) >= 2, "last_name", "must be at least two characters")
 	v.Check(len(d.Password) >= 6, "password", "must be at least six characters")
+	v.Check(len(d.Address) > 12, "address", "must be longer than 12 characters")
 }
 
 func (d *registerDTO) populate(user *data.User) error {
 	user.FirstName = d.FirstName
 	user.LastName = d.LastName
 	user.Email = d.Email
-	user.IsActivated = false
-	user.IsAdmin = false
-	user.RoleID = 2
 	// hashing
 	err := user.SetPassword(d.Password)
 	return err
@@ -179,5 +179,90 @@ func (d *editProfileDTO) populate(user *data.User) {
 
 	if d.Address != nil {
 		user.Address = *d.Address
+	}
+}
+
+type createProductDTO struct {
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Brand       string  `json:"brand"`
+	Category    string  `json:"category"`
+	Image       string  `json:"image"`
+	Price       float64 `json:"price"`
+	Count       int64   `json:"count"`
+}
+
+func (d *createProductDTO) validate(v *validator.Validator) {
+	v.Check(d.Name != "", "name", "must be provided")
+	v.Check(d.Description != "", "description", "must be provided")
+	v.Check(d.Brand != "", "brand", "must be provided")
+	v.Check(d.Category != "", "category", "must be provided")
+	v.Check(d.Image != "", "image", "must be provided")
+	v.Check(d.Price != 0, "price", "must be provided")
+	v.Check(d.Count != 0, "count", "must be provided")
+
+	v.Check(govalidator.IsURL(d.Image), "image", "must be valid URL")
+	v.Check(d.Price >= 0, "price", "must be valid value")
+	v.Check(d.Count >= 0, "count", "must be valid value")
+	// NOTE hard coded
+	v.Check(validator.In([]string{"computers", "electronics", "smart home"}, d.Category), "category", "invalid category {computers|electronics|smart home}")
+}
+
+func (d *createProductDTO) populate(product *data.Product) {
+	product.Name = d.Name
+	product.Description = d.Description
+	product.Brand = d.Brand
+	product.Category = d.Category
+	product.Image = d.Image
+	product.Price = d.Price
+	product.Count = d.Count
+}
+
+type updateProductDTO struct {
+	Name        *string  `json:"name"`
+	Description *string  `json:"description"`
+	Brand       *string  `json:"brand"`
+	Category    *string  `json:"category"`
+	Image       *string  `json:"image"`
+	Price       *float64 `json:"price"`
+	Count       *int64   `json:"count"`
+}
+
+func (d *updateProductDTO) validate(v *validator.Validator) {
+	if d.Category != nil {
+		v.Check(validator.In([]string{"computers", "electronics", "smart home"}, *d.Category), "category", "invalid category {computers|electronics|smart home}")
+	}
+	if d.Image != nil {
+		v.Check(govalidator.IsURL(*d.Image), "image", "must be valid URL")
+	}
+	if d.Price != nil {
+		v.Check(*d.Price >= 0, "price", "must be valid value")
+	}
+	if d.Count != nil {
+		v.Check(*d.Count >= 0, "count", "must be valid value")
+	}
+}
+
+func (d *updateProductDTO) populate(product *data.Product) {
+	if d.Name != nil {
+		product.Name = *d.Name
+	}
+	if d.Description != nil {
+		product.Description = *d.Description
+	}
+	if d.Brand != nil {
+		product.Brand = *d.Brand
+	}
+	if d.Category != nil {
+		product.Category = *d.Category
+	}
+	if d.Image != nil {
+		product.Image = *d.Image
+	}
+	if d.Price != nil {
+		product.Price = *d.Price
+	}
+	if d.Count != nil {
+		product.Count = *d.Count
 	}
 }

@@ -30,8 +30,9 @@ func (app *application) registerHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// TODO NOTE RoleID=3, default user
-	user.RoleID = 3
+	// TODO NOTE RoleID=2, default user
+	user.RoleID = 2
+	user.IsActivated = false
 
 	if err := app.models.Users.Insert(&user); err != nil {
 		switch {

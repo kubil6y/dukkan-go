@@ -20,15 +20,21 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/profile", app.requireAuthentication(app.getProfileHandler))         // authenticated
 	router.HandlerFunc(http.MethodPatch, "/v1/profile/edit", app.requireAuthentication(app.editProfileHandler)) // authenticated
 
-	router.HandlerFunc(http.MethodGet, "/v1/admin/users", app.getAllUsersHandler) // admin
-	router.HandlerFunc(http.MethodGet, "/v1/admin/users/:id", app.getUserHandler) // admin
+	router.HandlerFunc(http.MethodGet, "/v1/admin/users", app.requireRole("admin", app.getAllUsersHandler)) // admin
+	router.HandlerFunc(http.MethodGet, "/v1/admin/users/:id", app.requireRole("admin", app.getUserHandler)) // admin
 
-	router.HandlerFunc(http.MethodPost, "/v1/admin/roles", app.createRoleHandler)             // admin
-	router.HandlerFunc(http.MethodGet, "/v1/admin/roles", app.getAllRolesHandler)             // admin
-	router.HandlerFunc(http.MethodGet, "/v1/admin/roles/:id", app.getRoleHandler)             // admin
-	router.HandlerFunc(http.MethodPut, "/v1/admin/roles/:id", app.updateRoleHandler)          // admin
-	router.HandlerFunc(http.MethodDelete, "/v1/admin/roles/:id", app.deleteRoleHandler)       // admin
-	router.HandlerFunc(http.MethodPut, "/v1/admin/users/:id/role", app.updateUserRoleHandler) // admin
+	router.HandlerFunc(http.MethodPost, "/v1/admin/roles", app.requireRole("admin", app.createRoleHandler))             // admin
+	router.HandlerFunc(http.MethodGet, "/v1/admin/roles", app.requireRole("admin", app.getAllRolesHandler))             // admin
+	router.HandlerFunc(http.MethodGet, "/v1/admin/roles/:id", app.requireRole("admin", app.getRoleHandler))             // admin
+	router.HandlerFunc(http.MethodPut, "/v1/admin/roles/:id", app.requireRole("admin", app.updateRoleHandler))          // admin
+	router.HandlerFunc(http.MethodDelete, "/v1/admin/roles/:id", app.requireRole("admin", app.deleteRoleHandler))       // admin
+	router.HandlerFunc(http.MethodPut, "/v1/admin/users/:id/role", app.requireRole("admin", app.updateUserRoleHandler)) // admin
+
+	router.HandlerFunc(http.MethodGet, "/v1/products", app.getAllProductsHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/products/:id", app.getProductHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/admin/products", app.createProductHandler)
+	router.HandlerFunc(http.MethodPatch, "/v1/admin/products/:id", app.updateProductHandler)
+	router.HandlerFunc(http.MethodDelete, "/v1/admin/products/:id", app.deleteProductHandler)
 
 	return app.authenticate(router)
 }

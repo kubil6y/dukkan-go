@@ -27,3 +27,12 @@ func (v *Validator) Valid() bool {
 }
 
 // NOTE helper functions: https://github.com/asaskevich/govalidator
+
+func In(list []string, s string) bool {
+	for _, v := range list {
+		if v == s {
+			return true
+		}
+	}
+	return false
+}
