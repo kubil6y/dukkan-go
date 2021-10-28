@@ -30,16 +30,40 @@ type Product struct {
 	Ratings     []Rating `json:"ratings,omitempty" gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE"`
 }
 
+// UserReviewed() is a function that checks,
+// if user reviewed the product or not returns bool
+func (p *Product) UserReviewed(user *User) bool {
+	if len(p.Reviews) == 0 {
+		return false
+	}
+	for _, review := range p.Reviews {
+		if review.UserID == user.ID {
+			return true
+		}
+	}
+	return false
+}
+
+// UserRated() is a function that checks,
+// if user reviewed the product or not returns bool
+func (p *Product) UserRated(user *User) bool {
+	if len(p.Ratings) == 0 {
+		return false
+	}
+	for _, rating := range p.Ratings {
+		if rating.UserID == user.ID {
+			return true
+		}
+	}
+	return false
+}
+
 type ProductModel struct {
 	DB *gorm.DB
 }
 
 func (m ProductModel) Insert(p *Product) error {
-	if err := m.DB.Create(p).Error; err != nil {
-		// no duplicate check because there are no unique constraints...
-		return err
-	}
-	return nil
+	return m.DB.Create(p).Error
 }
 
 func (m ProductModel) GetAll(p *Paginate) ([]Product, Metadata, error) {
@@ -59,7 +83,14 @@ func (m ProductModel) GetAll(p *Paginate) ([]Product, Metadata, error) {
 func (m ProductModel) GetByID(id int64) (*Product, error) {
 	var product Product
 
-	err := m.DB.Where("id=?", id).First(&product).Error
+	// TODO
+
+	err := m.DB.
+		Where("id=?", id).
+		Preload("Reviews").
+		Preload("Reviews.User").
+		Preload("Ratings").
+		First(&product).Error
 	if err != nil {
 		switch {
 		case errors.Is(err, gorm.ErrRecordNotFound):

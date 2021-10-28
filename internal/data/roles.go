@@ -16,7 +16,7 @@ type RoleModel struct {
 }
 
 func (m RoleModel) Insert(r *Role) error {
-	if err := m.DB.Create(&r).Error; err != nil {
+	if err := m.DB.Create(r).Error; err != nil {
 		switch {
 		case IsDuplicateRecord(err):
 			return ErrDuplicateRecord

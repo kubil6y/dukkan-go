@@ -81,3 +81,15 @@ func (app *application) notPermittedResponse(w http.ResponseWriter, r *http.Requ
 	message := "your user account doesn't have the necessary permissions to access this resource"
 	app.errorResponse(w, r, http.StatusForbidden, message)
 }
+
+// 401 - StatusBadRequest
+func (app *application) alreadyReviewedResponse(w http.ResponseWriter, r *http.Request) {
+	message := "you have already reviewed this product"
+	app.errorResponse(w, r, http.StatusForbidden, message)
+}
+
+// 401 - StatusBadRequest
+func (app *application) alreadyRatedResponse(w http.ResponseWriter, r *http.Request) {
+	message := "you have already rated this product"
+	app.errorResponse(w, r, http.StatusForbidden, message)
+}

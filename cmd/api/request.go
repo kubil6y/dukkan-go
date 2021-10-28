@@ -266,3 +266,12 @@ func (d *updateProductDTO) populate(product *data.Product) {
 		product.Count = *d.Count
 	}
 }
+
+type reviewDTO struct {
+	Text string `json:"text"`
+}
+
+func (d *reviewDTO) validate(v *validator.Validator) {
+	v.Check(d.Text != "", "text", "must be provided")
+	v.Check(len(d.Text) > 3, "text", "must be longer than three characters")
+}

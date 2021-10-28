@@ -23,6 +23,7 @@ type Models struct {
 	Tokens   TokenModel
 	Roles    RoleModel
 	Products ProductModel
+	Reviews  ReviewModel
 }
 
 func NewModels(db *gorm.DB) Models {
@@ -31,5 +32,6 @@ func NewModels(db *gorm.DB) Models {
 		Tokens:   TokenModel{DB: db},
 		Roles:    RoleModel{DB: db},
 		Products: ProductModel{DB: db},
+		Reviews:  ReviewModel{DB: db},
 	}
 }
