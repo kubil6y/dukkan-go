@@ -19,19 +19,21 @@ type CoreModel struct {
 }
 
 type Models struct {
-	Users    UserModel
-	Tokens   TokenModel
-	Roles    RoleModel
-	Products ProductModel
-	Reviews  ReviewModel
+	Users      UserModel
+	Tokens     TokenModel
+	Roles      RoleModel
+	Products   ProductModel
+	Categories CategoryModel
+	Reviews    ReviewModel
 }
 
 func NewModels(db *gorm.DB) Models {
 	return Models{
-		Users:    UserModel{DB: db},
-		Tokens:   TokenModel{DB: db},
-		Roles:    RoleModel{DB: db},
-		Products: ProductModel{DB: db},
-		Reviews:  ReviewModel{DB: db},
+		Users:      UserModel{DB: db},
+		Tokens:     TokenModel{DB: db},
+		Roles:      RoleModel{DB: db},
+		Products:   ProductModel{DB: db},
+		Categories: CategoryModel{DB: db},
+		Reviews:    ReviewModel{DB: db},
 	}
 }

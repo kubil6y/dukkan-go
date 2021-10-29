@@ -275,3 +275,16 @@ func (d *reviewDTO) validate(v *validator.Validator) {
 	v.Check(d.Text != "", "text", "must be provided")
 	v.Check(len(d.Text) > 3, "text", "must be longer than three characters")
 }
+
+type categoryDTO struct {
+	Name string `json:"name"`
+}
+
+func (d categoryDTO) validate(v *validator.Validator) {
+	v.Check(d.Name != "", "name", "must be provided")
+	v.Check(len(d.Name) > 3, "name", "must be longer than three characters")
+}
+
+func (d categoryDTO) populate(category *data.Category) {
+	category.Name = d.Name
+}
