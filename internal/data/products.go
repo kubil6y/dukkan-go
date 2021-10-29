@@ -70,7 +70,7 @@ func (m ProductModel) Insert(p *Product) error {
 func (m ProductModel) GetAll(p *Paginate) ([]Product, Metadata, error) {
 	var products []Product
 
-	err := m.DB.Scopes(p.PaginatedResults).Find(&products).Error
+	err := m.DB.Scopes(p.PaginatedResults).Preload("Category").Find(&products).Error
 	if err != nil {
 		return nil, Metadata{}, nil
 	}

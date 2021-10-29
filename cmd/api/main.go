@@ -50,6 +50,8 @@ func main() {
 		models:  data.NewModels(db),
 	}
 
+	// // !!!DANGER!!! app.seed(db) // //
+
 	if err := app.serve(); err != nil {
 		app.logger.Fatalf("failed to start %s server", app.config.env)
 	}
