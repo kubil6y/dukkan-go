@@ -183,20 +183,20 @@ func (d *editProfileDTO) populate(user *data.User) {
 }
 
 type createProductDTO struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Brand       string  `json:"brand"`
-	Category    string  `json:"category"`
-	Image       string  `json:"image"`
-	Price       float64 `json:"price"`
-	Count       int64   `json:"count"`
+	Name         string  `json:"name"`
+	Description  string  `json:"description"`
+	Brand        string  `json:"brand"`
+	CategoryName string  `json:"category_name"`
+	Image        string  `json:"image"`
+	Price        float64 `json:"price"`
+	Count        int64   `json:"count"`
 }
 
 func (d *createProductDTO) validate(v *validator.Validator) {
 	v.Check(d.Name != "", "name", "must be provided")
 	v.Check(d.Description != "", "description", "must be provided")
 	v.Check(d.Brand != "", "brand", "must be provided")
-	v.Check(d.Category != "", "category", "must be provided")
+	v.Check(d.CategoryName != "", "category_name", "must be provided")
 	v.Check(d.Image != "", "image", "must be provided")
 	v.Check(d.Price != 0, "price", "must be provided")
 	v.Check(d.Count != 0, "count", "must be provided")
@@ -204,34 +204,28 @@ func (d *createProductDTO) validate(v *validator.Validator) {
 	v.Check(govalidator.IsURL(d.Image), "image", "must be valid URL")
 	v.Check(d.Price >= 0, "price", "must be valid value")
 	v.Check(d.Count >= 0, "count", "must be valid value")
-	// NOTE hard coded
-	v.Check(validator.In([]string{"computers", "electronics", "smart home"}, d.Category), "category", "invalid category {computers|electronics|smart home}")
 }
 
 func (d *createProductDTO) populate(product *data.Product) {
 	product.Name = d.Name
 	product.Description = d.Description
 	product.Brand = d.Brand
-	product.Category = d.Category
 	product.Image = d.Image
 	product.Price = d.Price
 	product.Count = d.Count
 }
 
 type updateProductDTO struct {
-	Name        *string  `json:"name"`
-	Description *string  `json:"description"`
-	Brand       *string  `json:"brand"`
-	Category    *string  `json:"category"`
-	Image       *string  `json:"image"`
-	Price       *float64 `json:"price"`
-	Count       *int64   `json:"count"`
+	Name         *string  `json:"name"`
+	Description  *string  `json:"description"`
+	Brand        *string  `json:"brand"`
+	CategoryName *string  `json:"category_name"`
+	Image        *string  `json:"image"`
+	Price        *float64 `json:"price"`
+	Count        *int64   `json:"count"`
 }
 
 func (d *updateProductDTO) validate(v *validator.Validator) {
-	if d.Category != nil {
-		v.Check(validator.In([]string{"computers", "electronics", "smart home"}, *d.Category), "category", "invalid category {computers|electronics|smart home}")
-	}
 	if d.Image != nil {
 		v.Check(govalidator.IsURL(*d.Image), "image", "must be valid URL")
 	}
@@ -252,9 +246,6 @@ func (d *updateProductDTO) populate(product *data.Product) {
 	}
 	if d.Brand != nil {
 		product.Brand = *d.Brand
-	}
-	if d.Category != nil {
-		product.Category = *d.Category
 	}
 	if d.Image != nil {
 		product.Image = *d.Image

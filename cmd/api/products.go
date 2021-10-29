@@ -25,6 +25,20 @@ func (app *application) createProductHandler(w http.ResponseWriter, r *http.Requ
 	var product data.Product
 	input.populate(&product)
 
+	// checking if category exists...
+	category, err := app.models.Categories.GetByName(input.CategoryName)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	product.Category = *category
+
 	if err := app.models.Products.Insert(&product); err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
@@ -90,7 +104,14 @@ func (app *application) getProductHandler(w http.ResponseWriter, r *http.Request
 	}
 }
 
+// TODO category check again here...
 func (app *application) updateProductHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := app.parseIDParam(r)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
 	var input updateProductDTO
 	if err := app.readJSON(w, r, &input); err != nil {
 		app.badRequestResponse(w, r, err)
@@ -100,12 +121,6 @@ func (app *application) updateProductHandler(w http.ResponseWriter, r *http.Requ
 	v := validator.New()
 	if input.validate(v); !v.Valid() {
 		app.failedValidationResponse(w, r, v.Errors)
-		return
-	}
-
-	id, err := app.parseIDParam(r)
-	if err != nil {
-		app.badRequestResponse(w, r, err)
 		return
 	}
 
@@ -121,6 +136,23 @@ func (app *application) updateProductHandler(w http.ResponseWriter, r *http.Requ
 	}
 
 	input.populate(product)
+
+	// if category_name is exists in DTO,
+	// check if category exists...
+	if *input.CategoryName != "" {
+		category, err := app.models.Categories.GetByName(*input.CategoryName)
+		if err != nil {
+			switch {
+			case errors.Is(err, data.ErrRecordNotFound):
+				app.notFoundResponse(w, r)
+			default:
+				app.serverErrorResponse(w, r, err)
+			}
+			return
+		}
+		product.Category = *category
+	}
+
 	if err := app.models.Products.Update(product); err != nil {
 		app.serverErrorResponse(w, r, err)
 		return

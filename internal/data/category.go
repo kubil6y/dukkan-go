@@ -8,7 +8,8 @@ import (
 
 type Category struct {
 	CoreModel
-	Name string `json:"name" gorm:"uniqueIndex;not null"`
+	Name     string    `json:"name" gorm:"uniqueIndex;not null"`
+	Products []Product `json:"products,omitempty" gorm:"foreignKey:CategoryID;constraint:OnDelete:SET NULL"`
 }
 
 type CategoryModel struct {
