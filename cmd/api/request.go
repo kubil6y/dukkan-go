@@ -278,6 +278,15 @@ func (d *reviewDTO) validate(v *validator.Validator) {
 	v.Check(len(d.Text) > 3, "text", "must be longer than three characters")
 }
 
+type ratingDTO struct {
+	Value int64 `json:"rating"`
+}
+
+func (d *ratingDTO) validate(v *validator.Validator) {
+	v.Check(d.Value >= 1, "rating", "must be greater than or equal to one")
+	v.Check(d.Value <= 5, "rating", "must be less than or equal to five")
+}
+
 type categoryDTO struct {
 	Name string `json:"name"`
 }

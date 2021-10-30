@@ -20,9 +20,13 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/profile", app.requireAuthentication(app.getProfileHandler))
 	router.HandlerFunc(http.MethodPatch, "/v1/profile/edit", app.requireAuthentication(app.editProfileHandler))
 
-	router.HandlerFunc(http.MethodPost, "/v1/products/:slug/review", app.requireAuthentication(app.createReviewHandler)) // TODO
-	router.HandlerFunc(http.MethodPut, "/v1/products/:id/review", app.requireAuthentication(app.updateReviewHandler))    // TODO
-	router.HandlerFunc(http.MethodDelete, "/v1/products/:id/review", app.requireAuthentication(app.deleteReviewHandler)) // TODO
+	router.HandlerFunc(http.MethodPost, "/v1/products/:slug/review", app.requireAuthentication(app.createReviewHandler))
+	router.HandlerFunc(http.MethodPut, "/v1/products/:id/review", app.requireAuthentication(app.updateReviewHandler))
+	router.HandlerFunc(http.MethodDelete, "/v1/products/:id/review", app.requireAuthentication(app.deleteReviewHandler))
+
+	router.HandlerFunc(http.MethodPost, "/v1/products/:slug/rating", app.requireAuthentication(app.createRatingHandler))
+	router.HandlerFunc(http.MethodPut, "/v1/products/:id/rating", app.requireAuthentication(app.updateRatingHandler))
+	router.HandlerFunc(http.MethodDelete, "/v1/products/:id/rating", app.requireAuthentication(app.deleteRatingHandler))
 
 	router.HandlerFunc(http.MethodGet, "/v1/admin/users", app.requireRole("admin", app.getAllUsersHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/admin/users/:id", app.requireRole("admin", app.getUserHandler))
@@ -34,8 +38,8 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/admin/orders", app.requireRole("admin", app.getAllOrdersHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/admin/orders/:id", app.requireRole("admin", app.getOrderHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/admin/user/:id/orders", app.requireRole("admin", app.getOrdersByUserHandler))
-	router.HandlerFunc(http.MethodPatch, "/v1/admin/orders/:id", app.requireRole("admin", app.editOrderHandler))    // admin // NOT TESTED
-	router.HandlerFunc(http.MethodDelete, "/v1/admin/orders/:id", app.requireRole("admin", app.deleteOrderHandler)) // admin // NOT TESTED
+	router.HandlerFunc(http.MethodPatch, "/v1/admin/orders/:id", app.requireRole("admin", app.editOrderHandler))
+	router.HandlerFunc(http.MethodDelete, "/v1/admin/orders/:id", app.requireRole("admin", app.deleteOrderHandler))
 
 	router.HandlerFunc(http.MethodPost, "/v1/admin/roles", app.requireRole("admin", app.createRoleHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/admin/roles", app.requireRole("admin", app.getAllRolesHandler))

@@ -1,6 +1,10 @@
 package data
 
-import "gorm.io/gorm"
+import (
+	"errors"
+
+	"gorm.io/gorm"
+)
 
 type Rating struct {
 	CoreModel
@@ -11,4 +15,31 @@ type Rating struct {
 
 type RatingModel struct {
 	DB *gorm.DB
+}
+
+func (m RatingModel) Insert(r *Rating) error {
+	return m.DB.Create(r).Error
+}
+
+func (m RatingModel) GetByID(id int64) (*Rating, error) {
+	var rating Rating
+
+	if err := m.DB.Where("id=?", id).First(&rating).Error; err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &rating, nil
+}
+
+func (m RatingModel) Update(r *Rating) error {
+	return m.DB.Model(r).Updates(r).Error
+}
+
+func (m RatingModel) Delete(r *Rating) error {
+	return m.DB.Delete(r).Error
 }

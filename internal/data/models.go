@@ -25,6 +25,7 @@ type Models struct {
 	Products   ProductModel
 	Categories CategoryModel
 	Reviews    ReviewModel
+	Ratings    RatingModel
 	Orders     OrderModel
 	OrderItems OrderItemModel
 }
@@ -37,6 +38,7 @@ func NewModels(db *gorm.DB) Models {
 		Products:   ProductModel{DB: db},
 		Categories: CategoryModel{DB: db},
 		Reviews:    ReviewModel{DB: db},
+		Ratings:    RatingModel{DB: db},
 		Orders:     OrderModel{DB: db},
 		OrderItems: OrderItemModel{DB: db},
 	}
