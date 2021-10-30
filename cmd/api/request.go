@@ -2,6 +2,7 @@ package main
 
 import (
 	"strings"
+	"time"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/gosimple/slug"
@@ -289,4 +290,36 @@ func (d categoryDTO) validate(v *validator.Validator) {
 func (d categoryDTO) populate(category *data.Category) {
 	category.Name = sanitize(d.Name)
 	category.Slug = slug.Make(category.Name)
+}
+
+type editOrderDTO struct {
+	PaymentMethod *string `json:"payment_method"`
+	IsPaid        *bool   `json:"is_paid"`
+	IsDelivered   *bool   `json:"is_delivered"`
+}
+
+func (d *editOrderDTO) validate(v *validator.Validator) {
+	if d.PaymentMethod != nil {
+		v.Check(data.In([]string{"cash", "credit"}, strings.ToLower(strings.Trim(*d.PaymentMethod, " "))), "payment_method", "must be cash or credit")
+	}
+}
+
+func (d *editOrderDTO) populate(order *data.Order) {
+	if d.PaymentMethod != nil {
+		order.PaymentMethod = *d.PaymentMethod
+	}
+
+	if d.IsPaid != nil {
+		if *d.IsPaid == true {
+			order.IsPaid = true
+			order.PaidAt = time.Now()
+		}
+	}
+
+	if d.IsDelivered != nil {
+		if *d.IsDelivered == true {
+			order.IsDelivered = true
+			order.DeliveredAt = time.Now()
+		}
+	}
 }

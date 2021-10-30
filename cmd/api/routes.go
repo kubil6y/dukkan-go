@@ -27,15 +27,15 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/admin/users", app.requireRole("admin", app.getAllUsersHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/admin/users/:id", app.requireRole("admin", app.getUserHandler))
 
-	router.HandlerFunc(http.MethodGet, "/v1/my-orders", app.getOrdersOfAuthUserHandler)        // activated // NOT TESTED
-	router.HandlerFunc(http.MethodGet, "/v1/my-orders/:id", app.getOrderByIDOfAuthUserHandler) // activated // NOT TESTED
-	router.HandlerFunc(http.MethodPost, "/v1/orders", app.createOrderHandler)                  // activated // NOT TESTED
+	router.HandlerFunc(http.MethodGet, "/v1/my-orders", app.requireActivation(app.getOrdersOfAuthUserHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/my-orders/:id", app.requireActivation(app.getOrderByIDOfAuthUserHandler))
+	router.HandlerFunc(http.MethodPost, "/v1/orders", app.requireActivation(app.createOrderHandler))
 
-	router.HandlerFunc(http.MethodGet, "/v1/admin/orders", app.getAllOrdersHandler)             // admin // NOT TESTED
-	router.HandlerFunc(http.MethodGet, "/v1/admin/orders/:id", app.getOrderHandler)             //admin // NOT TESTED
-	router.HandlerFunc(http.MethodGet, "/v1/admin/user/:id/orders", app.getOrdersByUserHandler) // admin // NOT TESTED
-	router.HandlerFunc(http.MethodPatch, "/v1/admin/orders/:id", app.editOrderHandler)          // admin // NOT TESTED
-	router.HandlerFunc(http.MethodDelete, "/v1/admin/orders/:id", app.deleteOrderHandler)       // admin // NOT TESTED
+	router.HandlerFunc(http.MethodGet, "/v1/admin/orders", app.requireRole("admin", app.getAllOrdersHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/admin/orders/:id", app.requireRole("admin", app.getOrderHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/admin/user/:id/orders", app.requireRole("admin", app.getOrdersByUserHandler))
+	router.HandlerFunc(http.MethodPatch, "/v1/admin/orders/:id", app.requireRole("admin", app.editOrderHandler))    // admin // NOT TESTED
+	router.HandlerFunc(http.MethodDelete, "/v1/admin/orders/:id", app.requireRole("admin", app.deleteOrderHandler)) // admin // NOT TESTED
 
 	router.HandlerFunc(http.MethodPost, "/v1/admin/roles", app.requireRole("admin", app.createRoleHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/admin/roles", app.requireRole("admin", app.getAllRolesHandler))
@@ -50,12 +50,12 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodPut, "/v1/admin/categories/:id", app.requireRole("admin", app.updateCategoryHandler))
 	router.HandlerFunc(http.MethodDelete, "/v1/admin/categories/:id", app.requireRole("admin", app.deleteCategoryHandler))
 
-	router.HandlerFunc(http.MethodGet, "/v1/products", app.getAllProductsHandler)
-	router.HandlerFunc(http.MethodGet, "/v1/products/:slug", app.getProductHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/products", app.getAllProductsHandler)   // public
+	router.HandlerFunc(http.MethodGet, "/v1/products/:slug", app.getProductHandler) // public
 	router.HandlerFunc(http.MethodGet, "/v1/products/:slug/category", app.getProductsByCategoryHandler)
-	router.HandlerFunc(http.MethodPost, "/v1/admin/products", app.createProductHandler)
-	router.HandlerFunc(http.MethodPatch, "/v1/admin/products/:id", app.updateProductHandler)
-	router.HandlerFunc(http.MethodDelete, "/v1/admin/products/:id", app.deleteProductHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/admin/products", app.requireRole("admin", app.createProductHandler))
+	router.HandlerFunc(http.MethodPatch, "/v1/admin/products/:id", app.requireRole("admin", app.updateProductHandler))
+	router.HandlerFunc(http.MethodDelete, "/v1/admin/products/:id", app.requireRole("admin", app.deleteProductHandler))
 
 	return app.authenticate(router)
 }

@@ -143,9 +143,106 @@ func (app *application) getOrdersByUserHandler(w http.ResponseWriter, r *http.Re
 }
 
 func (app *application) createOrderHandler(w http.ResponseWriter, r *http.Request) {
+	// NOTE dto is stored in data/orders (to avoid circular imports)
+	var input data.CreateOrderDTO
+	if err := app.readJSON(w, r, &input); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
 
+	v := validator.New()
+	if input.Validate(v); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	user := app.getUserContext(r)
+
+	order, err := app.models.Orders.CreateOrder(user.ID, input)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	e := envelope{"order": order}
+	out := app.outOK(e)
+	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
 }
 
-func (app *application) editOrderHandler(w http.ResponseWriter, r *http.Request) {}
+func (app *application) editOrderHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := app.parseIDParam(r)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
 
-func (app *application) deleteOrderHandler(w http.ResponseWriter, r *http.Request) {}
+	var input editOrderDTO
+	if err := app.readJSON(w, r, &input); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	v := validator.New()
+	if input.validate(v); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	order, err := app.models.Orders.GetByID(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	input.populate(order)
+	if err := app.models.Orders.Save(order); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	e := envelope{"order": order}
+	out := app.outOK(e)
+	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+}
+
+func (app *application) deleteOrderHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := app.parseIDParam(r)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	order, err := app.models.Orders.GetByID(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	if err := app.models.Orders.Delete(order); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	e := envelope{"message": "success"}
+	out := app.outOK(e)
+	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+}
