@@ -23,5 +23,7 @@ func autoMigrate(db *gorm.DB) {
 		&data.Category{},
 		&data.Review{},
 		&data.Rating{},
+		&data.Order{},
+		&data.OrderItem{},
 	)
 }
