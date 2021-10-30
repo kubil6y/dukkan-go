@@ -1,6 +1,8 @@
 package data
 
 import (
+	"errors"
+
 	"gorm.io/gorm"
 )
 
@@ -18,6 +20,21 @@ type ReviewModel struct {
 
 func (m ReviewModel) Insert(r *Review) error {
 	return m.DB.Create(r).Error
+}
+
+func (m ReviewModel) GetByID(id int64) (*Review, error) {
+	var review Review
+
+	if err := m.DB.Where("id=?", id).First(&review).Error; err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &review, nil
 }
 
 func (m ReviewModel) Update(r *Review) error {
