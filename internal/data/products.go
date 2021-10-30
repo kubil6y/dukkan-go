@@ -96,6 +96,19 @@ func (m ProductModel) GetBySlug(slug string) (*Product, error) {
 	return &product, nil
 }
 
+func (m ProductModel) GetByCategory(p *Paginate, categoryID int64) ([]Product, Metadata, error) {
+	var products []Product
+	err := m.DB.Scopes(p.PaginatedResults).Where("category_id=?", categoryID).Find(&products).Error
+	if err != nil {
+		return nil, Metadata{}, nil
+	}
+
+	var total int64
+	m.DB.Model(&Product{}).Where("category_id=?", categoryID).Count(&total)
+	metadata := CalculateMetadata(p, int(total))
+	return products, metadata, nil
+}
+
 func (m ProductModel) GetByID(id int64) (*Product, error) {
 	var product Product
 

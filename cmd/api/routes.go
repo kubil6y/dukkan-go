@@ -41,7 +41,8 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodDelete, "/v1/admin/categories/:id", app.requireRole("admin", app.deleteCategoryHandler))
 
 	router.HandlerFunc(http.MethodGet, "/v1/products", app.getAllProductsHandler)
-	router.HandlerFunc(http.MethodGet, "/v1/products/:id", app.getProductHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/products/:slug", app.getProductHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/products/:slug/category", app.getProductsByCategoryHandler)
 	router.HandlerFunc(http.MethodPost, "/v1/admin/products", app.createProductHandler)
 	router.HandlerFunc(http.MethodPatch, "/v1/admin/products/:id", app.updateProductHandler)
 	router.HandlerFunc(http.MethodDelete, "/v1/admin/products/:id", app.deleteProductHandler)

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/bxcodec/faker/v3"
+	"github.com/gosimple/slug"
 	"github.com/kubil6y/dukkan-go/internal/data"
 	"gorm.io/gorm"
 )
@@ -59,13 +60,14 @@ func seedCategoriesAndProducts(db *gorm.DB) {
 	rand.Seed(time.Now().UnixNano())
 
 	computers := data.Category{Name: "computers"}
-	computers.Slug = data.Slugify(computers.Name, 6)
 	electronics := data.Category{Name: "electronics"}
-	electronics.Slug = data.Slugify(electronics.Name, 6)
 	clothing := data.Category{Name: "clothing"}
-	clothing.Slug = data.Slugify(clothing.Name, 6)
 	specialDeals := data.Category{Name: "Special Deals"}
-	specialDeals.Slug = data.Slugify(specialDeals.Name, 6)
+
+	computers.Slug = slug.Make(computers.Name)
+	clothing.Slug = slug.Make(clothing.Name)
+	electronics.Slug = slug.Make(electronics.Name)
+	specialDeals.Slug = slug.Make(specialDeals.Name)
 
 	categories := []data.Category{computers, electronics, clothing, specialDeals}
 

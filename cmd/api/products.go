@@ -79,13 +79,9 @@ func (app *application) getAllProductsHandler(w http.ResponseWriter, r *http.Req
 }
 
 func (app *application) getProductHandler(w http.ResponseWriter, r *http.Request) {
-	id, err := app.parseIDParam(r)
-	if err != nil {
-		app.badRequestResponse(w, r, err)
-		return
-	}
+	slug := app.parseSlugParam(r)
 
-	product, err := app.models.Products.GetByID(id)
+	product, err := app.models.Products.GetBySlug(slug)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
@@ -97,6 +93,46 @@ func (app *application) getProductHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	e := envelope{"product": product}
+	out := app.outOK(e)
+	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+}
+
+// TODO
+func (app *application) getProductsByCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	v := validator.New()
+	p := data.NewPaginate(r, v, 10, 1)
+
+	if data.ValidatePaginate(p, v); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	categorySlug := app.parseSlugParam(r)
+
+	category, err := app.models.Categories.GetBySlug(categorySlug)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	products, metadata, err := app.models.Products.GetByCategory(p, category.ID)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	e := envelope{
+		"products": products,
+		"metadata": metadata,
+	}
 	out := app.outOK(e)
 	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
 		app.serverErrorResponse(w, r, err)

@@ -216,7 +216,7 @@ func (d *createProductDTO) validate(v *validator.Validator) {
 
 func (d *createProductDTO) populate(product *data.Product) {
 	product.Name = sanitize(d.Name)
-	product.Slug = slug.Make(d.Name)
+	product.Slug = data.Slugify(product.Name, 6)
 	product.Description = sanitize(d.Description)
 	product.Brand = sanitize(d.Brand)
 	product.Image = sanitize(d.Image)
@@ -249,7 +249,7 @@ func (d *updateProductDTO) validate(v *validator.Validator) {
 func (d *updateProductDTO) populate(product *data.Product) {
 	if d.Name != nil {
 		product.Name = sanitize(*d.Name)
-		product.Slug = slug.Make(*d.Name)
+		product.Slug = data.Slugify(product.Name, 6)
 	}
 	if d.Description != nil {
 		product.Description = *d.Description
@@ -288,4 +288,5 @@ func (d categoryDTO) validate(v *validator.Validator) {
 
 func (d categoryDTO) populate(category *data.Category) {
 	category.Name = sanitize(d.Name)
+	category.Slug = slug.Make(category.Name)
 }

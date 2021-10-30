@@ -95,6 +95,12 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst int
 	return nil
 }
 
+func (app *application) parseSlugParam(r *http.Request) string {
+	params := httprouter.ParamsFromContext(r.Context())
+	s := params.ByName("slug")
+	return s
+}
+
 func (app *application) parseIDParam(r *http.Request) (int64, error) {
 	params := httprouter.ParamsFromContext(r.Context())
 	s := params.ByName("id")
