@@ -20,12 +20,22 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/profile", app.requireAuthentication(app.getProfileHandler))
 	router.HandlerFunc(http.MethodPatch, "/v1/profile/edit", app.requireAuthentication(app.editProfileHandler))
 
-	router.HandlerFunc(http.MethodPost, "/v1/review-product/:id", app.requireAuthentication(app.createReviewHandler))
-	router.HandlerFunc(http.MethodPut, "/v1/review-product/:id", app.requireAuthentication(app.updateReviewHandler))
-	router.HandlerFunc(http.MethodDelete, "/v1/review-product/:id", app.requireAuthentication(app.deleteReviewHandler))
+	router.HandlerFunc(http.MethodPost, "/v1/review-product/:id", app.requireAuthentication(app.createReviewHandler))   // TODO
+	router.HandlerFunc(http.MethodPut, "/v1/review-product/:id", app.requireAuthentication(app.updateReviewHandler))    // TODO
+	router.HandlerFunc(http.MethodDelete, "/v1/review-product/:id", app.requireAuthentication(app.deleteReviewHandler)) // TODO
 
 	router.HandlerFunc(http.MethodGet, "/v1/admin/users", app.requireRole("admin", app.getAllUsersHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/admin/users/:id", app.requireRole("admin", app.getUserHandler))
+
+	router.HandlerFunc(http.MethodGet, "/v1/my-orders", app.getOrdersOfAuthUserHandler)        // activated // NOT TESTED
+	router.HandlerFunc(http.MethodGet, "/v1/my-orders/:id", app.getOrderByIDOfAuthUserHandler) // activated // NOT TESTED
+	router.HandlerFunc(http.MethodPost, "/v1/orders", app.createOrderHandler)                  // activated // NOT TESTED
+
+	router.HandlerFunc(http.MethodGet, "/v1/admin/orders", app.getAllOrdersHandler)             // admin // NOT TESTED
+	router.HandlerFunc(http.MethodGet, "/v1/admin/orders/:id", app.getOrderHandler)             //admin // NOT TESTED
+	router.HandlerFunc(http.MethodGet, "/v1/admin/user/:id/orders", app.getOrdersByUserHandler) // admin // NOT TESTED
+	router.HandlerFunc(http.MethodPatch, "/v1/admin/orders/:id", app.editOrderHandler)          // admin // NOT TESTED
+	router.HandlerFunc(http.MethodDelete, "/v1/admin/orders/:id", app.deleteOrderHandler)       // admin // NOT TESTED
 
 	router.HandlerFunc(http.MethodPost, "/v1/admin/roles", app.requireRole("admin", app.createRoleHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/admin/roles", app.requireRole("admin", app.getAllRolesHandler))
