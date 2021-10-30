@@ -8,7 +8,7 @@ type Review struct {
 	CoreModel
 	Text      string `json:"text" gorm:"not null"`
 	UserID    int64  `json:"-" gorm:"not null"`
-	User      User   `json:"user"`
+	User      *User  `json:"user,omitempty"`
 	ProductID int64  `json:"-" gorm:"not null"`
 }
 

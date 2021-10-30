@@ -173,9 +173,8 @@ func (app *application) updateProductHandler(w http.ResponseWriter, r *http.Requ
 
 	input.populate(product)
 
-	// if category_name is exists in DTO,
 	// check if category exists...
-	if *input.CategoryName != "" {
+	if input.CategoryName != nil {
 		category, err := app.models.Categories.GetByName(*input.CategoryName)
 		if err != nil {
 			switch {

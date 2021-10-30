@@ -20,9 +20,9 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/profile", app.requireAuthentication(app.getProfileHandler))
 	router.HandlerFunc(http.MethodPatch, "/v1/profile/edit", app.requireAuthentication(app.editProfileHandler))
 
-	router.HandlerFunc(http.MethodPost, "/v1/review-product/:id", app.requireAuthentication(app.createReviewHandler))   // TODO
-	router.HandlerFunc(http.MethodPut, "/v1/review-product/:id", app.requireAuthentication(app.updateReviewHandler))    // TODO
-	router.HandlerFunc(http.MethodDelete, "/v1/review-product/:id", app.requireAuthentication(app.deleteReviewHandler)) // TODO
+	router.HandlerFunc(http.MethodPost, "/v1/products/:slug/review", app.requireAuthentication(app.createReviewHandler)) // TODO
+	router.HandlerFunc(http.MethodPut, "/v1/review-product/:id", app.requireAuthentication(app.updateReviewHandler))     // TODO
+	router.HandlerFunc(http.MethodDelete, "/v1/review-product/:id", app.requireAuthentication(app.deleteReviewHandler))  // TODO
 
 	router.HandlerFunc(http.MethodGet, "/v1/admin/users", app.requireRole("admin", app.getAllUsersHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/admin/users/:id", app.requireRole("admin", app.getUserHandler))

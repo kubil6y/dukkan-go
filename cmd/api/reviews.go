@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/kubil6y/dukkan-go/internal/data"
@@ -9,12 +10,7 @@ import (
 )
 
 func (app *application) createReviewHandler(w http.ResponseWriter, r *http.Request) {
-	// TODO
-	productID, err := app.parseIDParam(r)
-	if err != nil {
-		app.badRequestResponse(w, r, err)
-		return
-	}
+	slug := app.parseSlugParam(r)
 
 	var input reviewDTO
 	if err := app.readJSON(w, r, &input); err != nil {
@@ -28,9 +24,8 @@ func (app *application) createReviewHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	user := app.getUserContext(r)
-
-	product, err := app.models.Products.GetByID(productID)
+	// product check...
+	product, err := app.models.Products.GetBySlug(slug)
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
@@ -38,6 +33,27 @@ func (app *application) createReviewHandler(w http.ResponseWriter, r *http.Reque
 		default:
 			app.serverErrorResponse(w, r, err)
 		}
+		return
+	}
+
+	user := app.getUserContext(r)
+	user, err = app.models.Users.GetUserWithOrders(user.ID)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	// TODO
+	fmt.Printf("%+v\n", user.Orders)
+
+	// get user orders and all that shit will get error here...
+	didOrder, err := user.DidOrderProduct(product)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+	if !didOrder {
+		app.notPurchasedResponse(w, r)
 		return
 	}
 
@@ -56,7 +72,7 @@ func (app *application) createReviewHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	e := envelope{"message": "success"}
+	e := envelope{"review": review}
 	out := app.outOK(e)
 	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
 		app.serverErrorResponse(w, r, err)

@@ -57,6 +57,22 @@ func (u *User) ComparePassword(plain string) (bool, error) {
 	return true, nil
 }
 
+func (u *User) DidOrderProduct(product *Product) (bool, error) {
+	if u.Orders == nil {
+		return false, errors.New("could not load orders for the user.")
+	}
+
+	// check if user has bought the product
+	for _, order := range u.Orders {
+		for _, orderItem := range order.OrderItems {
+			if orderItem.ProductID == product.ID {
+				return true, nil
+			}
+		}
+	}
+	return false, nil
+}
+
 type UserModel struct {
 	DB *gorm.DB
 }
@@ -144,5 +160,19 @@ func (m UserModel) GetForToken(scope string, tokenPlaintext string) (*User, erro
 		Preload("Role").
 		First(&user).Error
 
+	return &user, nil
+}
+
+func (m UserModel) GetUserWithOrders(id int64) (*User, error) {
+	var user User
+	err := m.DB.Preload("Orders.OrderItems").Where("id = ?", id).First(&user).Error
+	if err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
 	return &user, nil
 }

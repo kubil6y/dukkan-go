@@ -28,8 +28,8 @@ type Product struct {
 	Count       int64     `json:"count" gorm:"not null"`
 	CategoryID  int64     `json:"category_id" gorm:"not null"`
 	Category    *Category `json:"category,omitempty"`
-	Reviews     []Review  `json:"reviews,omitempty" gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE"`
-	Ratings     []Rating  `json:"ratings,omitempty" gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE"`
+	Reviews     []Review  `json:"reviews" gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE"`
+	Ratings     []Rating  `json:"ratings" gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE"`
 }
 
 // UserReviewed() is a function that checks,
@@ -84,7 +84,11 @@ func (m ProductModel) GetAll(p *Paginate) ([]Product, Metadata, error) {
 
 func (m ProductModel) GetBySlug(slug string) (*Product, error) {
 	var product Product
-	err := m.DB.Where("slug=?", slug).First(&product).Error
+	err := m.DB.
+		Preload("Reviews").
+		Preload("Ratings").
+		Where("slug=?", slug).
+		First(&product).Error
 	if err != nil {
 		switch {
 		case errors.Is(err, gorm.ErrRecordNotFound):
@@ -112,14 +116,8 @@ func (m ProductModel) GetByCategory(p *Paginate, categoryID int64) ([]Product, M
 func (m ProductModel) GetByID(id int64) (*Product, error) {
 	var product Product
 
-	// TODO
-
 	err := m.DB.
-		Where("id=?", id).
-		Preload("Reviews").
-		Preload("Reviews.User").
-		Preload("Ratings").
-		First(&product).Error
+		Where("id=?", id).First(&product).Error
 	if err != nil {
 		switch {
 		case errors.Is(err, gorm.ErrRecordNotFound):

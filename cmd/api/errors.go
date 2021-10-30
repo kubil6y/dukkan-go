@@ -82,14 +82,20 @@ func (app *application) notPermittedResponse(w http.ResponseWriter, r *http.Requ
 	app.errorResponse(w, r, http.StatusForbidden, message)
 }
 
-// 401 - StatusBadRequest
+// 403 - StatusForbidden
 func (app *application) alreadyReviewedResponse(w http.ResponseWriter, r *http.Request) {
 	message := "you have already reviewed this product"
 	app.errorResponse(w, r, http.StatusForbidden, message)
 }
 
-// 401 - StatusBadRequest
+// 403 - StatusForbidden
 func (app *application) alreadyRatedResponse(w http.ResponseWriter, r *http.Request) {
 	message := "you have already rated this product"
+	app.errorResponse(w, r, http.StatusForbidden, message)
+}
+
+// 403 - StatusForbidden
+func (app *application) notPurchasedResponse(w http.ResponseWriter, r *http.Request) {
+	message := "you have not purchased this product"
 	app.errorResponse(w, r, http.StatusForbidden, message)
 }
