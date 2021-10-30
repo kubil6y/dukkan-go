@@ -59,9 +59,15 @@ func seedCategoriesAndProducts(db *gorm.DB) {
 	rand.Seed(time.Now().UnixNano())
 
 	computers := data.Category{Name: "computers"}
+	computers.Slug = data.Slugify(computers.Name, 6)
 	electronics := data.Category{Name: "electronics"}
+	electronics.Slug = data.Slugify(electronics.Name, 6)
 	clothing := data.Category{Name: "clothing"}
-	categories := []data.Category{computers, electronics, clothing}
+	clothing.Slug = data.Slugify(clothing.Name, 6)
+	specialDeals := data.Category{Name: "Special Deals"}
+	specialDeals.Slug = data.Slugify(specialDeals.Name, 6)
+
+	categories := []data.Category{computers, electronics, clothing, specialDeals}
 
 	fmt.Println("seeding categories...")
 	for _, category := range categories {
@@ -80,6 +86,7 @@ func seedCategoriesAndProducts(db *gorm.DB) {
 			Count:       int64(rand.Intn(15)),
 			CategoryID:  int64(rand.Intn(3) + 1),
 		}
+		product.Slug = data.Slugify(product.Name, 6)
 
 		db.Create(&product)
 	}

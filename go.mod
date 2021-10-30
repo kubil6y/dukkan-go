@@ -15,6 +15,8 @@ require (
 )
 
 require (
+	github.com/gosimple/slug v1.11.0 // indirect
+	github.com/gosimple/unidecode v1.0.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect

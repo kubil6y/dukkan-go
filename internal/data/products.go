@@ -20,6 +20,7 @@ var (
 type Product struct {
 	CoreModel
 	Name        string   `json:"name" gorm:"not null"`
+	Slug        string   `json:"slug" gorm:"uniqueIndex;not null"`
 	Description string   `json:"description" gorm:"not null"`
 	Brand       string   `json:"brand" gorm:"not null"`
 	Image       string   `json:"image" gorm:"not null"`
@@ -79,6 +80,20 @@ func (m ProductModel) GetAll(p *Paginate) ([]Product, Metadata, error) {
 	m.DB.Model(&Product{}).Count(&total)
 	metadata := CalculateMetadata(p, int(total))
 	return products, metadata, nil
+}
+
+func (m ProductModel) GetBySlug(slug string) (*Product, error) {
+	var product Product
+	err := m.DB.Where("slug=?", slug).First(&product).Error
+	if err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+	return &product, nil
 }
 
 func (m ProductModel) GetByID(id int64) (*Product, error) {

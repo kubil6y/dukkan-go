@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/gosimple/slug"
 	"github.com/kubil6y/dukkan-go/internal/data"
 	"github.com/kubil6y/dukkan-go/internal/validator"
 )
@@ -114,7 +115,8 @@ func (app *application) updateCategoryHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	input.populate(category)
+	category.Name = input.Name
+	category.Slug = slug.Make(input.Name)
 
 	if err := app.models.Categories.Update(category); err != nil {
 		app.serverErrorResponse(w, r, err)

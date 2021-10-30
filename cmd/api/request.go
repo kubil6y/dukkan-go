@@ -1,10 +1,18 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/asaskevich/govalidator"
+	"github.com/gosimple/slug"
 	"github.com/kubil6y/dukkan-go/internal/data"
 	"github.com/kubil6y/dukkan-go/internal/validator"
 )
+
+// sanitize() trims spaces and transforms strings to lowercase
+func sanitize(s string) string {
+	return strings.ToLower(strings.Trim(s, " "))
+}
 
 type registerDTO struct {
 	FirstName       string `json:"first_name"`
@@ -32,9 +40,9 @@ func (d *registerDTO) validate(v *validator.Validator) {
 }
 
 func (d *registerDTO) populate(user *data.User) error {
-	user.FirstName = d.FirstName
-	user.LastName = d.LastName
-	user.Email = d.Email
+	user.FirstName = sanitize(d.FirstName)
+	user.LastName = sanitize(d.LastName)
+	user.Email = sanitize(d.Email)
 	// hashing
 	err := user.SetPassword(d.Password)
 	return err
@@ -61,7 +69,7 @@ func (d *createRoleDTO) validate(v *validator.Validator) {
 }
 
 func (d *createRoleDTO) populate(role *data.Role) {
-	role.Name = d.Name
+	role.Name = sanitize(d.Name)
 }
 
 // seems like duplication but in the future,
@@ -77,7 +85,7 @@ func (d *updateRoleDTO) validate(v *validator.Validator) {
 }
 
 func (d *updateRoleDTO) populate(role *data.Role) {
-	role.Name = d.Name
+	role.Name = sanitize(d.Name)
 }
 
 type updateUserRoleDTO struct {
@@ -163,14 +171,14 @@ func (d *editProfileDTO) validate(v *validator.Validator) {
 
 func (d *editProfileDTO) populate(user *data.User) {
 	if d.FirstName != nil {
-		user.FirstName = *d.FirstName
+		user.FirstName = sanitize(*d.FirstName)
 	}
 
 	if d.LastName != nil {
-		user.LastName = *d.LastName
+		user.LastName = sanitize(*d.LastName)
 	}
 	if d.Email != nil {
-		user.Email = *d.Email
+		user.Email = sanitize(*d.Email)
 	}
 
 	if d.Password != nil {
@@ -178,7 +186,7 @@ func (d *editProfileDTO) populate(user *data.User) {
 	}
 
 	if d.Address != nil {
-		user.Address = *d.Address
+		user.Address = sanitize(*d.Address)
 	}
 }
 
@@ -207,10 +215,11 @@ func (d *createProductDTO) validate(v *validator.Validator) {
 }
 
 func (d *createProductDTO) populate(product *data.Product) {
-	product.Name = d.Name
-	product.Description = d.Description
-	product.Brand = d.Brand
-	product.Image = d.Image
+	product.Name = sanitize(d.Name)
+	product.Slug = slug.Make(d.Name)
+	product.Description = sanitize(d.Description)
+	product.Brand = sanitize(d.Brand)
+	product.Image = sanitize(d.Image)
 	product.Price = d.Price
 	product.Count = d.Count
 }
@@ -239,7 +248,8 @@ func (d *updateProductDTO) validate(v *validator.Validator) {
 
 func (d *updateProductDTO) populate(product *data.Product) {
 	if d.Name != nil {
-		product.Name = *d.Name
+		product.Name = sanitize(*d.Name)
+		product.Slug = slug.Make(*d.Name)
 	}
 	if d.Description != nil {
 		product.Description = *d.Description
@@ -277,5 +287,5 @@ func (d categoryDTO) validate(v *validator.Validator) {
 }
 
 func (d categoryDTO) populate(category *data.Category) {
-	category.Name = d.Name
+	category.Name = sanitize(d.Name)
 }
