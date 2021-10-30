@@ -115,6 +115,7 @@ func (app *application) updateCategoryHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	// populate
 	category.Name = input.Name
 	category.Slug = slug.Make(input.Name)
 

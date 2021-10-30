@@ -19,17 +19,17 @@ var (
 
 type Product struct {
 	CoreModel
-	Name        string   `json:"name" gorm:"not null"`
-	Slug        string   `json:"slug" gorm:"uniqueIndex;not null"`
-	Description string   `json:"description" gorm:"not null"`
-	Brand       string   `json:"brand" gorm:"not null"`
-	Image       string   `json:"image" gorm:"not null"`
-	Price       float64  `json:"price" gorm:"not null"`
-	Count       int64    `json:"count" gorm:"not null"`
-	CategoryID  int64    `json:"category_id" gorm:"not null"`
-	Category    Category `json:"category,omitempty"`
-	Reviews     []Review `json:"reviews,omitempty" gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE"`
-	Ratings     []Rating `json:"ratings,omitempty" gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE"`
+	Name        string    `json:"name" gorm:"not null"`
+	Slug        string    `json:"slug" gorm:"uniqueIndex;not null"`
+	Description string    `json:"description" gorm:"not null"`
+	Brand       string    `json:"brand" gorm:"not null"`
+	Image       string    `json:"image" gorm:"not null"`
+	Price       float64   `json:"price" gorm:"not null"`
+	Count       int64     `json:"count" gorm:"not null"`
+	CategoryID  int64     `json:"category_id" gorm:"not null"`
+	Category    *Category `json:"category,omitempty"`
+	Reviews     []Review  `json:"reviews,omitempty" gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE"`
+	Ratings     []Rating  `json:"ratings,omitempty" gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE"`
 }
 
 // UserReviewed() is a function that checks,

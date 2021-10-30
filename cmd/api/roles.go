@@ -211,7 +211,7 @@ func (app *application) updateUserRoleHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	user.Role = *role
+	user.Role = role
 
 	if err := app.models.Users.Update(user); err != nil {
 		app.serverErrorResponse(w, r, err)

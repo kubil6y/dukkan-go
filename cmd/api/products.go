@@ -37,7 +37,7 @@ func (app *application) createProductHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	product.Category = *category
+	product.Category = category
 
 	if err := app.models.Products.Insert(&product); err != nil {
 		app.serverErrorResponse(w, r, err)
@@ -186,7 +186,7 @@ func (app *application) updateProductHandler(w http.ResponseWriter, r *http.Requ
 			}
 			return
 		}
-		product.Category = *category
+		product.Category = category
 	}
 
 	if err := app.models.Products.Update(product); err != nil {

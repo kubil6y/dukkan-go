@@ -23,9 +23,7 @@ do not allow to write a review before purchasing and rating it...
 
 
 # TODO
-# products crud
 # add missing middlewares
-# stop doing cruds for all that shit? just get it working...
 # token cleanup
 # graceful shutdown, panic recovery, rate limiting.
 
@@ -33,12 +31,4 @@ do not allow to write a review before purchasing and rating it...
 
 
 
-
-
-
-
-
-# product creation add category integration...
-# get products by category
-# product slug
-# add seeding
+OMITEMPTY SHIT goes away when used pointers
