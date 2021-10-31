@@ -18,6 +18,14 @@ type config struct {
 	db     struct {
 		dsn string
 	}
+	limiter struct {
+		enabled bool
+		rps     float64
+		burst   int
+	}
+	cors struct {
+		trustedOrigins []string
+	}
 }
 
 type application struct {

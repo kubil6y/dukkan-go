@@ -61,5 +61,5 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodPatch, "/v1/admin/products/:id", app.requireRole("admin", app.updateProductHandler))
 	router.HandlerFunc(http.MethodDelete, "/v1/admin/products/:id", app.requireRole("admin", app.deleteProductHandler))
 
-	return app.authenticate(router)
+	return app.recoverPanic(app.enableCORS(app.rateLimit(app.authenticate(router))))
 }

@@ -5,17 +5,18 @@ go 1.17
 require (
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
 	github.com/bxcodec/faker/v3 v3.6.0
+	github.com/gosimple/slug v1.11.0
 	github.com/jackc/pgconn v1.10.0
 	github.com/joho/godotenv v1.4.0
 	github.com/julienschmidt/httprouter v1.3.0
 	go.uber.org/zap v1.19.1
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
+	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac
 	gorm.io/driver/postgres v1.2.0
 	gorm.io/gorm v1.22.0
 )
 
 require (
-	github.com/gosimple/slug v1.11.0 // indirect
 	github.com/gosimple/unidecode v1.0.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect

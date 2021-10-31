@@ -105,3 +105,9 @@ func (app *application) outOfStockResponse(w http.ResponseWriter, r *http.Reques
 	message := "product is out of stock"
 	app.errorResponse(w, r, http.StatusBadRequest, message)
 }
+
+// 429 - StatusTooManyRequests
+func (app *application) rateLimitExceededResponse(w http.ResponseWriter, r *http.Request) {
+	message := "rate limit exceeded"
+	app.errorResponse(w, r, http.StatusTooManyRequests, message)
+}
