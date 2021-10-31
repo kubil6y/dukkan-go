@@ -53,7 +53,6 @@ func (m CategoryModel) GetByID(id int64) (*Category, error) {
 	return &category, nil
 }
 
-// TODO
 func (m CategoryModel) GetBySlug(slug string) (*Category, error) {
 	var category Category
 	if err := m.DB.Where("slug=?", slug).First(&category).Error; err != nil {

@@ -99,3 +99,9 @@ func (app *application) notPurchasedResponse(w http.ResponseWriter, r *http.Requ
 	message := "you have not purchased this product"
 	app.errorResponse(w, r, http.StatusForbidden, message)
 }
+
+// 401 - StatusBadRequest
+func (app *application) outOfStockResponse(w http.ResponseWriter, r *http.Request) {
+	message := "product is out of stock"
+	app.errorResponse(w, r, http.StatusBadRequest, message)
+}

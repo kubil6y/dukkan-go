@@ -160,7 +160,12 @@ func (app *application) createOrderHandler(w http.ResponseWriter, r *http.Reques
 
 	order, err := app.models.Orders.CreateOrder(user.ID, input)
 	if err != nil {
-		app.serverErrorResponse(w, r, err)
+		switch {
+		case errors.Is(err, data.ErrOutOfStock):
+			app.outOfStockResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
 		return
 	}
 

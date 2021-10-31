@@ -130,6 +130,16 @@ func (m OrderModel) CreateOrder(userID int64, dto CreateOrderDTO) (*Order, error
 			return nil, errors.New(fmt.Sprintf("product_id: %d does not exist\n", item.ProductID))
 		}
 
+		// check product's stock and save new stock count
+		newProductCount := product.Count - item.Quantity
+		if newProductCount >= 0 {
+			product.Count = newProductCount
+			tx.Save(&product)
+		} else {
+			tx.Rollback()
+			return nil, ErrOutOfStock
+		}
+
 		total += (product.Price * float64(item.Quantity))
 
 		orderItem := OrderItem{

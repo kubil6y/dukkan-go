@@ -2,20 +2,32 @@ package data
 
 import (
 	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 )
-
-// TODO
-// handle prices decimal package?
-// handle data racing problem when purchasing.
-// handle relationships
 
 var (
 	CategoryElectronics = "electronics"
 	CategoryComputers   = "computers"
 	CategorySmartHome   = "smart home"
 )
+
+type ProductWrapper struct {
+	Product
+	RatingAverage float64 `json:"rating_average"`
+	RatingCount   int     `json:"rating_count"`
+	ReviewCount   int     `json:"review_count"`
+}
+
+func NewProductWrapper(product *Product) *ProductWrapper {
+	return &ProductWrapper{
+		Product:       *product,
+		RatingAverage: product.CalculateRating(),
+		RatingCount:   len(product.Ratings),
+		ReviewCount:   len(product.Reviews),
+	}
+}
 
 type Product struct {
 	CoreModel
@@ -28,8 +40,20 @@ type Product struct {
 	Count       int64     `json:"count" gorm:"not null"`
 	CategoryID  int64     `json:"category_id" gorm:"not null"`
 	Category    *Category `json:"category,omitempty"`
-	Reviews     []Review  `json:"reviews" gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE"`
-	Ratings     []Rating  `json:"ratings" gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE"`
+	Reviews     []Review  `json:"reviews,omitempty" gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE"`
+	Ratings     []Rating  `json:"ratings,omitempty" gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE"`
+}
+
+func (p *Product) CalculateRating() float64 {
+	if len(p.Ratings) == 0 {
+		return 0
+	}
+
+	var rating int64
+	for _, v := range p.Ratings {
+		rating += v.Value
+	}
+	return float64(rating) / float64(len(p.Ratings))
 }
 
 // UserReviewed() is a function that checks,
@@ -68,16 +92,16 @@ func (m ProductModel) Insert(p *Product) error {
 	return m.DB.Create(p).Error
 }
 
-func (m ProductModel) GetAll(p *Paginate) ([]Product, Metadata, error) {
+func (m ProductModel) GetAll(p *Paginate, searchTerm string) ([]Product, Metadata, error) {
 	var products []Product
 
-	err := m.DB.Scopes(p.PaginatedResults).Preload("Category").Find(&products).Error
+	err := m.DB.Scopes(p.PaginatedResults).Preload("Category").Where("name ILIKE ?", fmt.Sprintf("%%%s%%", searchTerm)).Find(&products).Error
 	if err != nil {
-		return nil, Metadata{}, nil
+		return nil, Metadata{}, err
 	}
 
 	var total int64
-	m.DB.Model(&Product{}).Count(&total)
+	m.DB.Model(&Product{}).Where("name ILIKE ?", fmt.Sprintf("%%%s%%", searchTerm)).Count(&total)
 	metadata := CalculateMetadata(p, int(total))
 	return products, metadata, nil
 }
@@ -104,7 +128,7 @@ func (m ProductModel) GetByCategory(p *Paginate, categoryID int64) ([]Product, M
 	var products []Product
 	err := m.DB.Scopes(p.PaginatedResults).Where("category_id=?", categoryID).Find(&products).Error
 	if err != nil {
-		return nil, Metadata{}, nil
+		return nil, Metadata{}, err
 	}
 
 	var total int64

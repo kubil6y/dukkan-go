@@ -94,7 +94,7 @@ func (m UserModel) GetAll(p *Paginate) ([]User, Metadata, error) {
 
 	err := m.DB.Scopes(p.PaginatedResults).Preload("Role").Find(&users).Error
 	if err != nil {
-		return nil, Metadata{}, nil
+		return nil, Metadata{}, err
 	}
 
 	var total int64

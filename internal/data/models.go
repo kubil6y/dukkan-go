@@ -10,6 +10,7 @@ import (
 var (
 	ErrRecordNotFound  = errors.New("record not found")
 	ErrDuplicateRecord = errors.New("duplicate record")
+	ErrOutOfStock      = errors.New("product is out of stock")
 )
 
 type CoreModel struct {

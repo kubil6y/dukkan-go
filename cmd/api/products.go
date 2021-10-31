@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/kubil6y/dukkan-go/internal/data"
 	"github.com/kubil6y/dukkan-go/internal/validator"
@@ -53,6 +54,10 @@ func (app *application) createProductHandler(w http.ResponseWriter, r *http.Requ
 }
 
 func (app *application) getAllProductsHandler(w http.ResponseWriter, r *http.Request) {
+	qs := r.URL.Query()
+	searchTerm := app.readString(qs, "search", "")
+	searchTerm = strings.ToLower(strings.Trim(searchTerm, " "))
+
 	v := validator.New()
 	p := data.NewPaginate(r, v, 10, 1)
 
@@ -61,7 +66,7 @@ func (app *application) getAllProductsHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	products, metadata, err := app.models.Products.GetAll(p)
+	products, metadata, err := app.models.Products.GetAll(p, searchTerm)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
@@ -92,7 +97,8 @@ func (app *application) getProductHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	e := envelope{"product": product}
+	pw := data.NewProductWrapper(product)
+	e := envelope{"product": pw}
 	out := app.outOK(e)
 	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
 		app.serverErrorResponse(w, r, err)
@@ -100,7 +106,6 @@ func (app *application) getProductHandler(w http.ResponseWriter, r *http.Request
 	}
 }
 
-// TODO
 func (app *application) getProductsByCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	v := validator.New()
 	p := data.NewPaginate(r, v, 10, 1)
@@ -140,7 +145,6 @@ func (app *application) getProductsByCategoryHandler(w http.ResponseWriter, r *h
 	}
 }
 
-// TODO category check again here...
 func (app *application) updateProductHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.parseIDParam(r)
 	if err != nil {
