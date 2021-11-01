@@ -170,6 +170,7 @@ func (app *application) rateLimit(next http.Handler) http.Handler {
 // didn’t include that header.
 // we can only set one header with Access-Control-Allow-Origin,
 // so we will overcome decide it on runtime.
+//go run ./cmd/api -cors-trusted-origins="http://localhost:9000 http://localhost:9001"
 func (app *application) enableCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Vary", "Origin")
