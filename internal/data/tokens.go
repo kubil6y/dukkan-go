@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base32"
+	"sort"
 	"time"
 
 	"gorm.io/gorm"
@@ -77,5 +78,24 @@ func (m TokenModel) ActivateUserAndDeleteToken(tokenPlaintext string, user *User
 	}
 
 	tx.Commit()
+	return nil
+}
+
+func (m TokenModel) KeepLastFiveAuthTokens(userID int64) error {
+	var tokens []Token
+
+	if err := m.DB.Where("user_id", userID).Find(&tokens).Error; err != nil {
+		return err
+	}
+
+	// sorting tokens by CreatedAt from latest to new
+	sort.Slice(tokens, func(i, j int) bool {
+		return tokens[i].CreatedAt.After(tokens[j].CreatedAt)
+	})
+
+	if err := m.DB.Where("created_at < ?", tokens[4].CreatedAt).Delete(&Token{}).Error; err != nil {
+		return err
+	}
+
 	return nil
 }

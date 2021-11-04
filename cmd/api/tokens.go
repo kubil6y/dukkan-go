@@ -28,7 +28,6 @@ func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, 
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
-			// using invalidCredentialsResponse for security reasons
 			app.invalidCredentialsResponse(w, r)
 		default:
 			app.serverErrorResponse(w, r, err)
@@ -51,6 +50,13 @@ func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, 
 		app.serverErrorResponse(w, r, err)
 		return
 	}
+
+	// Deleting auth tokens, keeping only last 5 on the background with a goroutine.
+	app.background(func() {
+		if err := app.models.Tokens.KeepLastFiveAuthTokens(user.ID); err != nil {
+			app.logger.Error("Error deleting tokens")
+		}
+	})
 
 	e := envelope{"authentication_token": map[string]interface{}{
 		"token":  token.Plaintext,
