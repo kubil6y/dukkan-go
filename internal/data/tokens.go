@@ -93,8 +93,10 @@ func (m TokenModel) KeepLastFiveAuthTokens(userID int64) error {
 		return tokens[i].CreatedAt.After(tokens[j].CreatedAt)
 	})
 
-	if err := m.DB.Where("created_at < ?", tokens[4].CreatedAt).Delete(&Token{}).Error; err != nil {
-		return err
+	if len(tokens) > 5 {
+		if err := m.DB.Where("created_at < ?", tokens[4].CreatedAt).Delete(&Token{}).Error; err != nil {
+			return err
+		}
 	}
 
 	return nil

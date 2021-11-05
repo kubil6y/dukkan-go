@@ -43,7 +43,8 @@ func (d *registerDTO) validate(v *validator.Validator) {
 func (d *registerDTO) populate(user *data.User) error {
 	user.FirstName = sanitize(d.FirstName)
 	user.LastName = sanitize(d.LastName)
-	user.Email = sanitize(d.Email)
+	// NOTE email domains might be case sensitive
+	user.Email = strings.ToLower(d.Email)
 	// hashing
 	err := user.SetPassword(d.Password)
 	return err
