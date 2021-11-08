@@ -45,6 +45,7 @@ func (d *registerDTO) populate(user *data.User) error {
 	user.LastName = sanitize(d.LastName)
 	// NOTE email domains might be case sensitive
 	user.Email = strings.ToLower(d.Email)
+	user.Address = sanitize(d.Address)
 	// hashing
 	err := user.SetPassword(d.Password)
 	return err
