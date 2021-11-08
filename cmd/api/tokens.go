@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -53,6 +54,7 @@ func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, 
 
 	// Deleting auth tokens, keeping only last 5 on the background with a goroutine.
 	app.background(func() {
+		fmt.Println("trying to delete tokens") // TODO
 		if err := app.models.Tokens.KeepLastFiveAuthTokens(user.ID); err != nil {
 			app.logger.Error("Error deleting tokens")
 		}

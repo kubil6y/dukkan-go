@@ -72,7 +72,7 @@ func (m TokenModel) ActivateUserAndDeleteToken(tokenPlaintext string, user *User
 		return err
 	}
 
-	if err := m.DB.Where("user_id", user.ID).Delete(Token{}).Error; err != nil {
+	if err := m.DB.Where("user_id=? and scope=?", user.ID, ScopeActivation).Delete(Token{}).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -84,17 +84,17 @@ func (m TokenModel) ActivateUserAndDeleteToken(tokenPlaintext string, user *User
 func (m TokenModel) KeepLastFiveAuthTokens(userID int64) error {
 	var tokens []Token
 
-	if err := m.DB.Where("user_id", userID).Find(&tokens).Error; err != nil {
+	if err := m.DB.Where("user_id=? and scope=?", userID, ScopeAuthentication).Find(&tokens).Error; err != nil {
 		return err
 	}
 
-	// sorting tokens by CreatedAt from latest to new
 	sort.Slice(tokens, func(i, j int) bool {
 		return tokens[i].CreatedAt.After(tokens[j].CreatedAt)
 	})
 
 	if len(tokens) > 5 {
-		if err := m.DB.Where("created_at < ?", tokens[4].CreatedAt).Delete(&Token{}).Error; err != nil {
+		args := []interface{}{userID, ScopeAuthentication, tokens[4].CreatedAt}
+		if err := m.DB.Where("user_id=? and scope=? and created_at < ?", args...).Delete(&Token{}).Error; err != nil {
 			return err
 		}
 	}
