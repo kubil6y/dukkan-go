@@ -36,4 +36,5 @@ func ActivationEmail(user *data.User, code string) {
 	*/
 
 	fmt.Println("email sent in background...")
+	fmt.Println(code)
 }
