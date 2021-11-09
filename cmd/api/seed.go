@@ -59,17 +59,17 @@ func seedRolesAndUsers(db *gorm.DB) {
 func seedCategoriesAndProducts(db *gorm.DB) {
 	rand.Seed(time.Now().UnixNano())
 
-	computers := data.Category{Name: "computers"}
+	furniture := data.Category{Name: "furniture"}
 	electronics := data.Category{Name: "electronics"}
-	clothing := data.Category{Name: "clothing"}
-	specialDeals := data.Category{Name: "Special Deals"}
+	beauty := data.Category{Name: "beauty"}
+	deals := data.Category{Name: "deals"}
 
-	computers.Slug = slug.Make(computers.Name)
-	clothing.Slug = slug.Make(clothing.Name)
+	furniture.Slug = slug.Make(furniture.Name)
+	beauty.Slug = slug.Make(beauty.Name)
 	electronics.Slug = slug.Make(electronics.Name)
-	specialDeals.Slug = slug.Make(specialDeals.Name)
+	deals.Slug = slug.Make(deals.Name)
 
-	categories := []data.Category{computers, electronics, clothing, specialDeals}
+	categories := []data.Category{furniture, electronics, beauty, deals}
 
 	fmt.Println("seeding categories...")
 	for _, category := range categories {
@@ -83,10 +83,10 @@ func seedCategoriesAndProducts(db *gorm.DB) {
 			Name:        faker.Username(),
 			Description: faker.Username(),
 			Brand:       faker.Username(),
-			Image:       "https://" + faker.Username(),
+			Image:       "https://m.media-amazon.com/images/I/A1sKFc-P-6L._AC_UL320_.jpg",
 			Price:       float64(rand.Intn(5000)),
 			Count:       int64(rand.Intn(15)),
-			CategoryID:  int64(rand.Intn(3) + 1),
+			CategoryID:  int64(rand.Intn(len(categories)) + 1),
 		}
 		product.Slug = data.Slugify(product.Name, 6)
 

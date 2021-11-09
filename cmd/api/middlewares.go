@@ -54,7 +54,7 @@ func (app *application) requireAuthentication(next http.HandlerFunc) http.Handle
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user := app.getUserContext(r)
 		if user.IsAnon() {
-			app.notPermittedResponse(w, r)
+			app.authenticationRequiredResponse(w, r)
 			return
 		}
 		next.ServeHTTP(w, r)
