@@ -40,8 +40,8 @@ type Product struct {
 	Count       int64     `json:"count" gorm:"not null"`
 	CategoryID  int64     `json:"category_id" gorm:"not null"`
 	Category    *Category `json:"category,omitempty"`
-	Reviews     []Review  `json:"reviews,omitempty" gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE"`
-	Ratings     []Rating  `json:"ratings,omitempty" gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE"`
+	Reviews     []Review  `json:"reviews" gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE"`
+	Ratings     []Rating  `json:"ratings" gorm:"foreignKey:ProductID;constraint:OnDelete:CASCADE"`
 }
 
 func (p *Product) CalculateRating() float64 {
@@ -109,7 +109,7 @@ func (m ProductModel) GetAll(p *Paginate, searchTerm string) ([]Product, Metadat
 func (m ProductModel) GetBySlug(slug string) (*Product, error) {
 	var product Product
 	err := m.DB.
-		Preload("Reviews").
+		Preload("Reviews.User").
 		Preload("Ratings").
 		Where("slug=?", slug).
 		First(&product).Error

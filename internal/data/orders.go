@@ -20,7 +20,7 @@ type Order struct {
 	PaidAt        time.Time   `json:"paid_at" gorm:"not null"`
 	TotalPrice    float64     `json:"total_price" gorm:"not null"`
 	DeliveredAt   time.Time   `json:"delivered_at" gorm:"not null"`
-	OrderItems    []OrderItem `json:"order_items,omitempty" gorm:"foreignKey:OrderID;constraint:OnDelete:CASCADE"`
+	OrderItems    []OrderItem `json:"order_items" gorm:"foreignKey:OrderID;constraint:OnDelete:CASCADE"`
 }
 
 type OrderItem struct {
