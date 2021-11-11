@@ -119,7 +119,7 @@ func (m UserModel) GetByID(id int64) (*User, error) {
 
 func (m UserModel) GetByEmail(email string) (*User, error) {
 	var user User
-	err := m.DB.Where("email=?", email).First(&user).Error
+	err := m.DB.Where("email=?", email).Preload("Role").First(&user).Error
 	if err != nil {
 		switch {
 		case errors.Is(err, gorm.ErrRecordNotFound):

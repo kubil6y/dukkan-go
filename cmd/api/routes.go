@@ -14,6 +14,7 @@ func (app *application) routes() http.Handler {
 
 	router.HandlerFunc(http.MethodPost, "/v1/register", app.registerHandler)
 	router.HandlerFunc(http.MethodPost, "/v1/tokens/authentication", app.createAuthenticationTokenHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/login", app.loginHandler)
 	router.HandlerFunc(http.MethodPost, "/v1/tokens/activation", app.activateAccountHandler)
 	router.HandlerFunc(http.MethodPost, "/v1/tokens/generate-activation", app.generateActivationTokenHandler)
 
